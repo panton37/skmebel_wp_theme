@@ -54,7 +54,7 @@
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M10 12L20 1.79494L18.2411 -2.25185e-07L10 8.41011L1.75888 -2.25185e-07L0 1.79494L10 12Z" fill="#252528"/>
                     </svg>
                 </summary>
-                <div class="styles pt-4">
+                <div class="styles terms-container pt-4">
                     <?php
                     $args = array(
                         'taxonomy' => 'style',
@@ -81,7 +81,7 @@
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M10 12L20 1.79494L18.2411 -2.25185e-07L10 8.41011L1.75888 -2.25185e-07L0 1.79494L10 12Z" fill="#252528"/>
                     </svg>
                 </summary>
-                <div class="colors pt-4">
+                <div class="material terms-container pt-4">
                     <?php
                     $args_material = array(
                         'taxonomy' => 'material',
@@ -107,7 +107,7 @@
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M10 12L20 1.79494L18.2411 -2.25185e-07L10 8.41011L1.75888 -2.25185e-07L0 1.79494L10 12Z" fill="#252528"/>
                     </svg>
                 </summary>
-                <div class="colors pt-4">
+                <div class="colors terms-container pt-4">
                     <?php
                     $args_color = array(
                         'taxonomy' => 'color',
