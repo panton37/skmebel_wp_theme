@@ -68,6 +68,7 @@ const getFilteredPosts = (url) => {
                 productsContainer.innerHTML =
                     `<p>Таких кухонь нет...</p>`;
             }
+            renderPagination(response.headers['x-wp-total']);
         });
 }
 
@@ -263,3 +264,44 @@ termsContainers.forEach((container, index) => {
         });
     }
 });
+
+// page-${num+1} hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50
+
+const setCurrentPageClasses = (el) => {
+
+}
+
+//test
+const paginationContainer = document.querySelector('.pagination');
+const firsPageBtnClasses = 'hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50';
+const otherPageBtnClasses = 'hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50';
+
+const renderPageBtn = (num) => {
+    const template = document.createElement('template');
+    template.innerHTML = `<li class="page-${num+1}">${num+1}</li>`;
+    paginationContainer.appendChild(template.content);
+    const pageLi = paginationContainer.querySelector(`.page-${num+1}`);
+    if(num === 0) {
+        firsPageBtnClasses.split(' ')
+            .forEach(class_name => { pageLi.classList.add(class_name) } )
+    } else {
+        otherPageBtnClasses.split(' ')
+            .forEach(class_name => { pageLi.classList.add(class_name) })
+    }
+    // Sending request
+    pageLi.addEventListener('click', (e) => {
+        const currentPageReq = {
+            page: num+1,
+        };
+        reqParams = Object.assign(reqParams, currentPageReq);
+        getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+    });
+}
+
+const renderPagination = (postsNumber) => {
+    paginationContainer.innerHTML = '';
+     const pagesNumber = postsNumber/3;
+     for(let i = 0; i <= pagesNumber; i++) {
+        renderPageBtn(i);
+     }
+};

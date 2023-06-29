@@ -64,7 +64,7 @@ $products_page = new WP_Query([
                 </svg>
             </button>
         </div>
-        <?php get_template_part('templates/sections/catalog_page/pagination'); ?>
+        <?php get_template_part('templates/sections/catalog_page/pagination', $post_id); ?>
     </div>
     <?php get_template_part('templates/sections/catalog_page/promo-banner'); ?>
     <?php get_template_part('templates/sections/catalog_page/info-block'); ?>

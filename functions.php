@@ -101,6 +101,8 @@ function get_template_response($args, string $item_slug) : WP_REST_Response
 // Filters API Callback
 function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
 {
+    $per_page = $request->get_param('per_page');
+
     $term_id = $request->get_param('category');
     $term_size_id = $request->get_param('size');
     $term_color_id = $request->get_param('color');
@@ -145,7 +147,8 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
     $args = array_merge([
         'post_type' => 'kitchen',
         'paged' => $request->get_param('page'),
-        'posts_per_page' => $request->get_param('per_page'),
+        'posts_per_page' => 3,
+//        'posts_per_page' => $per_page,
     ], $term_meta ? [
             'meta_key'          => $term_meta,
             'orderby'           => 'meta_value_num',
