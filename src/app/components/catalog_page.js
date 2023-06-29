@@ -5,6 +5,7 @@ const productsContainer = document.querySelector('.products');
 const loadingSpinner = document.querySelector('.loading_spinner');
 
 const resetFilter = document.querySelector('.reset-filter');
+const filterForm = document.querySelector('.filter-form');
 
 const priceFrom = document.querySelector('.prices .from-price');
 const priceTo = document.querySelector('.prices .to-price');
@@ -37,6 +38,16 @@ closeFilterBtn.addEventListener('click', (e) => {
     products.classList.toggle('hidden');
 });
 
+// Reset filters
+resetFilter.addEventListener('click', (e) => {
+   const inputs = filterForm.querySelectorAll('input');
+   inputs.forEach(input => {
+      input.type === 'number' ? input.value = '' : input.checked = false;
+   });
+   reqParams = {};
+   getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+});
+
 // Request object
 let reqParams = {}
 
@@ -67,15 +78,20 @@ const getPriceRange = (fromInput, toInput) => {
       price_to: !toInput.value ? 999999999 : +toInput.value,
   }
 };
-priceFrom.addEventListener('change', (e) => {
-    e.preventDefault();
-    reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
-    getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
-});
-priceTo.addEventListener('change', (e) => {
-    e.preventDefault();
-    reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
-    getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+// Send request only on Enter key hit
+['change', 'keydown'].forEach( evt => {
+    priceFrom.addEventListener(evt, (e) => {
+        if(evt === 'keydown' && e.keyCode === 13) {
+            reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
+            getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+        }
+    });
+    priceTo.addEventListener(evt, (e) => {
+        if(evt === 'keydown' && e.keyCode === 13) {
+            reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
+            getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+        }
+    });
 });
 
 // Add kitchen style checkboxes listeners
@@ -117,6 +133,44 @@ sizeCheckboxes.forEach(sizeBox => {
     })
 });
 
+// Add kitchen material checkboxes listeners
+const materialCheckboxes = document.querySelectorAll('.material-checkbox');
+materialCheckboxes.forEach(materialBox => {
+    materialBox.addEventListener('change', (e) => {
+        const checkedMaterial = [];
+        materialCheckboxes.forEach(checkBox => {
+            checkBox.checked === true ?
+                checkedMaterial.push(checkBox.dataset.id) :
+                checkedMaterial.slice(checkedMaterial.indexOf(checkBox.dataset.id),1);
+        });
+        if(checkedMaterial.length > 0) {
+            reqParams.material = checkedMaterial.join(',')
+        } else {
+            if(reqParams.material) { delete reqParams.material; }
+        }
+        getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+    })
+});
+
+// Add kitchen color checkboxes listeners
+const colorCheckboxes = document.querySelectorAll('.color-checkbox');
+colorCheckboxes.forEach(colorBox => {
+    colorBox.addEventListener('change', (e) => {
+        const checkedColor = [];
+        colorCheckboxes.forEach(checkBox => {
+            checkBox.checked === true ?
+                checkedColor.push(checkBox.dataset.id) :
+                checkedColor.slice(checkedColor.indexOf(checkBox.dataset.id),1);
+        });
+        if(checkedColor.length > 0) {
+            reqParams.color = checkedColor.join(',')
+        } else {
+            if(reqParams.color) { delete reqParams.color; }
+        }
+        getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
+    })
+});
+
 // SORTING KITCHENS
 // Cheap first
 cheapFirstBtn.addEventListener('click', (e) => {
@@ -126,7 +180,10 @@ cheapFirstBtn.addEventListener('click', (e) => {
     };
     reqParams = Object.assign(reqParams, orderByReq);
 
-    mobSortBtn.classList.contains('flex') ? mobSortOptions.classList.toggle('hidden') : null;
+    if(mobSortBtn.classList.contains('flex')) {
+        mobSortBtn.querySelector('.sort-btn-text').textContent = cheapFirstBtn.textContent;
+        mobSortOptions.classList.toggle('hidden');
+    }
 
     getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
 });
@@ -138,7 +195,10 @@ expensiveFirstBtn.addEventListener('click', (e) => {
     };
     reqParams = Object.assign(reqParams, orderByReq);
 
-    mobSortBtn.classList.contains('flex') ? mobSortOptions.classList.toggle('hidden') : null;
+    if(mobSortBtn.classList.contains('flex')) {
+        mobSortBtn.querySelector('.sort-btn-text').textContent = expensiveFirstBtn.textContent;
+        mobSortOptions.classList.toggle('hidden');
+    }
 
     getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
 });
@@ -150,7 +210,11 @@ saleFirstBtn.addEventListener('click', (e) => {
     };
     reqParams = Object.assign(reqParams, orderByReq);
 
-    mobSortBtn.classList.contains('flex') ? mobSortOptions.classList.toggle('hidden') : null;
+    if(mobSortBtn.classList.contains('flex')) {
+        mobSortBtn.querySelector('.sort-btn-text').textContent = saleFirstBtn.textContent;
+        mobSortOptions.classList.toggle('hidden');
+    }
 
     getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
 });
+

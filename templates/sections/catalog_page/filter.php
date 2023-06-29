@@ -7,7 +7,8 @@
                 <path d="M20 2.22222L2.22222 20L0 17.7778L17.7778 2.24783e-06L20 2.22222Z" fill="#17191C"/>
             </svg>
         </div>
-        <form class="flex flex-col px-5 lg:px-0 gap-y-10 lg:gap-y-0 pb-44" onsubmit="event.preventDefault();">
+        <!--filters form-->
+        <form class="filter-form flex flex-col px-5 lg:px-0 gap-y-10 lg:gap-y-0 pb-44" onsubmit="event.preventDefault();">
             <div class="lg:mb-6">
                 <h3 class="text-2xl px-2 font-medium mb-2 lg:mb-4 lg:text-3xl lg:font-semibold">Цена&nbsp;₽</h3>
                 <div class="prices grid grid-cols-2">
@@ -66,6 +67,58 @@
                             echo '<label for="big-checkbox-' . $term->slug . '" class="last-of-type:mb-0 mb-4  w-fit cursor-pointer flex items-center text-neutral-600 text-[18px] font-medium leading-normal">
                                      <input id="big-checkbox-' . $term->slug . '" data-id=' . $term->term_id . ' type="checkbox" value=""
                                             class="style-checkbox check mr-4">
+                                     ' . $term->name . '
+                                 </label>';
+                        endforeach;
+                    endif;
+                    ?>
+                </div>
+            </details>
+            <details class="group/details pb-6 border-b border-primary-black-25" open>
+                <summary class="flex justify-between items-center cursor-pointer">
+                    <h3 class="text-2xl px-2 font-medium pt-4 lg:mb-4 lg:text-3xl lg:font-semibold">Материал</h3>
+                    <svg class="group-open/details:rotate-180 transition-transform duration-200 ease-in-out" width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 12L20 1.79494L18.2411 -2.25185e-07L10 8.41011L1.75888 -2.25185e-07L0 1.79494L10 12Z" fill="#252528"/>
+                    </svg>
+                </summary>
+                <div class="colors pt-4">
+                    <?php
+                    $args_material = array(
+                        'taxonomy' => 'material',
+                        'hide_empty' => false
+                    );
+                    $terms = get_terms($args_material);
+                    if( $terms ) :
+                        foreach ( $terms as $term ) :
+                            echo '<label for="big-checkbox-' . $term->slug . '" class="last-of-type:mb-0 mb-4  w-fit cursor-pointer flex items-center text-neutral-600 text-[18px] font-medium leading-normal">
+                                     <input id="big-checkbox-' . $term->slug . '" data-id=' . $term->term_id . ' type="checkbox" value=""
+                                            class="material-checkbox check mr-4">
+                                     ' . $term->name . '
+                                 </label>';
+                        endforeach;
+                    endif;
+                    ?>
+                </div>
+            </details>
+            <details class="group/details pb-6 border-b border-primary-black-25" open>
+                <summary class="flex justify-between items-center cursor-pointer">
+                    <h3 class="text-2xl px-2 font-medium pt-4 lg:mb-4 lg:text-3xl lg:font-semibold">Цвет</h3>
+                    <svg class="group-open/details:rotate-180 transition-transform duration-200 ease-in-out" width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10 12L20 1.79494L18.2411 -2.25185e-07L10 8.41011L1.75888 -2.25185e-07L0 1.79494L10 12Z" fill="#252528"/>
+                    </svg>
+                </summary>
+                <div class="colors pt-4">
+                    <?php
+                    $args_color = array(
+                        'taxonomy' => 'color',
+                        'hide_empty' => false
+                    );
+                    $terms = get_terms($args_color);
+                    if( $terms ) :
+                        foreach ( $terms as $term ) :
+                            echo '<label for="big-checkbox-' . $term->slug . '" class="last-of-type:mb-0 mb-4  w-fit cursor-pointer flex items-center text-neutral-600 text-[18px] font-medium leading-normal">
+                                     <input id="big-checkbox-' . $term->slug . '" data-id=' . $term->term_id . ' type="checkbox" value=""
+                                            class="color-checkbox check mr-4">
                                      ' . $term->name . '
                                  </label>';
                         endforeach;

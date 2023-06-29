@@ -41,7 +41,13 @@ add_action('rest_api_init', function () {
             'category' => [
                 'type' => 'array'
             ],
+            'material' => [
+                'type' => 'array'
+            ],
             'size' => [
+                'type' => 'array'
+            ],
+            'color' => [
                 'type' => 'array'
             ],
             'meta_key' => [
@@ -97,6 +103,8 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
 {
     $term_id = $request->get_param('category');
     $term_size_id = $request->get_param('size');
+    $term_color_id = $request->get_param('color');
+    $term_material_id = $request->get_param('material');
 
     $term_meta = $request->get_param('meta_key');
     $term_order = $request->get_param('order');
@@ -104,7 +112,7 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
     $price_from = $request->get_param('price_from');
     $price_to = $request->get_param('price_to');
 
-    function get_tax_query($term_id, $term_size_id) {
+    function get_tax_query($term_id, $term_size_id, $term_color_id, $term_material_id) {
         $taxes = ['relation' => 'AND'];
         $term_id ? array_push($taxes, [
             'taxonomy' => 'style',
@@ -112,10 +120,22 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
             'terms' => $term_id,
             'operator' => 'IN'
         ]) : [];
+        $term_material_id ? array_push($taxes, [
+            'taxonomy' => 'material',
+            'field' => 'term_id',
+            'terms' => $term_material_id,
+            'operator' => 'IN'
+        ]) : [];
         $term_size_id ? array_push($taxes, [
             'taxonomy' => 'size',
             'field' => 'term_id',
             'terms' => $term_size_id,
+            'operator' => 'IN'
+        ]) : [];
+        $term_color_id ? array_push($taxes, [
+            'taxonomy' => 'color',
+            'field' => 'term_id',
+            'terms' => $term_color_id,
             'operator' => 'IN'
         ]) : [];
 
@@ -131,8 +151,12 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
             'orderby'           => 'meta_value_num',
             'order'             => $term_order
     ] : [],
-        ($term_id || $term_size_id) ? [
-            'tax_query' => get_tax_query($term_id, $term_size_id),
+        ($term_id || $term_size_id || $term_color_id || $term_material_id) ? [
+            'tax_query' => get_tax_query(
+                $term_id,
+                $term_size_id,
+                $term_color_id,
+                $term_material_id),
         ] : [],
         ($price_from || $price_to) ? [
             'meta_query' => [

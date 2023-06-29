@@ -21,7 +21,7 @@ $products_page = new WP_Query([
     <div class="relative">
         <button class="mob-sort-btn xl:hidden relative z-40 group flex items-center justify-center space-x-4 primary-btn py-5 bg-primary-black-40
                    text-primary-black-50 w-full mb-8">
-            <span class="">По популярности</span>
+            <span class="sort-btn-text">По популярности</span>
             <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path class="group-hover:fill-white" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
             </svg>
@@ -29,13 +29,13 @@ $products_page = new WP_Query([
         <div class="mob-sort-options hidden absolute z-30 bg-white w-full top-12 text-center pt-11 pb-8 rounded-b-xl xl:flex
         gap-x-7 mb-9 shadow-[0px_4px_12px_rgba(0,_0,_0,_0.25)] xl:bg-transparent xl:shadow-none xl:left-auto xl:rounded-none
         xl:pt-0 xl:pb-0 xl:reset-position">
-            <div class="mb-4 xl:mb-0 cursor-pointer text-xl hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div class="popularity-first mb-4 xl:mb-0 cursor-pointer text-xl hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 По популярности
             </div>
-            <div class="mb-4 xl:mb-0 cheap-first cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div class="cheap-first mb-4 xl:mb-0 cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 Сначала дешевле
             </div>
-            <div class="mb-4 xl:mb-0 expensive-first cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div class="expensive-first mb-4 xl:mb-0 cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 Сначала дороже
             </div>
             <div class="sale-first cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
@@ -46,16 +46,7 @@ $products_page = new WP_Query([
     <div class="mb-12 relative">
         <div class="loading_spinner hidden transition-all bg-white/50 w-full h-full absolute left-0 right-0 top-0 bottom-0 mx-auto">
             <div class="flex w-full h-full justify-center items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: none; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-                    <circle cx="50" cy="50" r="0" fill="none" stroke="#e90c59" stroke-width="2">
-                        <animate attributeName="r" repeatCount="indefinite" dur="2.272727272727273s" values="0;40" keyTimes="0;1" keySplines="0 0.2 0.8 1" calcMode="spline" begin="0s"></animate>
-                        <animate attributeName="opacity" repeatCount="indefinite" dur="2.272727272727273s" values="1;0" keyTimes="0;1" keySplines="0.2 0 0.8 1" calcMode="spline" begin="0s"></animate>
-                    </circle>
-                    <circle cx="50" cy="50" r="0" fill="none" stroke="#46dff0" stroke-width="2">
-                        <animate attributeName="r" repeatCount="indefinite" dur="2.272727272727273s" values="0;40" keyTimes="0;1" keySplines="0 0.2 0.8 1" calcMode="spline" begin="-1.1363636363636365s"></animate>
-                        <animate attributeName="opacity" repeatCount="indefinite" dur="2.272727272727273s" values="1;0" keyTimes="0;1" keySplines="0.2 0 0.8 1" calcMode="spline" begin="-1.1363636363636365s"></animate>
-                    </circle>
-                </svg>
+
             </div>
         </div>
         <div class="products grid grid-cols-2 gap-4 xl:grid-cols-3 xl:gap-12 mb-8">
