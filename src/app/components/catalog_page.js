@@ -9,6 +9,8 @@ const resetFilter = document.querySelector('.reset-filter');
 const priceFrom = document.querySelector('.prices .from-price');
 const priceTo = document.querySelector('.prices .to-price');
 
+const mobSortBtn = document.querySelector('.mob-sort-btn');
+const mobSortOptions = document.querySelector('.mob-sort-options');
 const cheapFirstBtn = document.querySelector('.cheap-first');
 const expensiveFirstBtn = document.querySelector('.expensive-first');
 const saleFirstBtn = document.querySelector('.sale-first');
@@ -18,7 +20,12 @@ const closeFilterBtn = document.querySelector('.close-filter-btn');
 const filter = document.querySelector('.filter-block');
 const products = document.querySelector('.products-block');
 
+// Toggle sorting options on mobile
+mobSortBtn.addEventListener('click', (e) => {
+    mobSortOptions.classList.toggle('hidden');
+});
 
+// Toggle filters on mobile
 showFilterBtn.addEventListener('click', (e) => {
    e.preventDefault();
    filter.classList.toggle('hidden');
@@ -119,6 +126,8 @@ cheapFirstBtn.addEventListener('click', (e) => {
     };
     reqParams = Object.assign(reqParams, orderByReq);
 
+    mobSortBtn.classList.contains('flex') ? mobSortOptions.classList.toggle('hidden') : null;
+
     getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
 });
 // Expensive first
@@ -129,15 +138,19 @@ expensiveFirstBtn.addEventListener('click', (e) => {
     };
     reqParams = Object.assign(reqParams, orderByReq);
 
+    mobSortBtn.classList.contains('flex') ? mobSortOptions.classList.toggle('hidden') : null;
+
     getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
 });
 // Order by sale size
 saleFirstBtn.addEventListener('click', (e) => {
     const orderByReq = {
-        order: 'ASC',
+        order: 'DESC',
         meta_key: 'kitchen_sale',
     };
     reqParams = Object.assign(reqParams, orderByReq);
+
+    mobSortBtn.classList.contains('flex') ? mobSortOptions.classList.toggle('hidden') : null;
 
     getFilteredPosts('http://skmebel/wp-json/wp/v2/custom_kitchen');
 });

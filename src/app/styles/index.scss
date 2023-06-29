@@ -23,6 +23,9 @@
   .z-active {
     @apply text-primary-hover-100;
   }
+  .reset-position {
+    position: unset;
+  }
 }
 
 @layer components {

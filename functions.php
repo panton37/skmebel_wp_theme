@@ -130,20 +130,21 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
             'meta_key'          => $term_meta,
             'orderby'           => 'meta_value_num',
             'order'             => $term_order
-    ] : [],[
-        'meta_query' => [
-            'relation' => 'AND',
-            [
-                'key' => 'kitchen_price',
-                'value' => [$price_from, $price_to],
-                'compare' => 'BETWEEN',
-                'type' => 'NUMERIC'
-            ],
-        ],
-    ],
-        [
+    ] : [],
+        ($term_id || $term_size_id) ? [
             'tax_query' => get_tax_query($term_id, $term_size_id),
-            ]);
+        ] : [],
+        ($price_from || $price_to) ? [
+            'meta_query' => [
+                'relation' => 'AND',
+                [
+                    'key' => 'kitchen_price',
+                    'value' => [$price_from, $price_to],
+                    'compare' => 'BETWEEN',
+                    'type' => 'NUMERIC'
+                ],
+            ],
+        ] : []);
 
     return get_template_response($args, 'kitchen');
 }
