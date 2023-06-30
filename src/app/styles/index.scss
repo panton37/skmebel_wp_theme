@@ -4,10 +4,9 @@
 
 @layer base {
   html {
-    @apply
-    text-primary-black-90
+    @apply scroll-smooth
     text-base
-    scroll-smooth;
+    text-primary-black-90;
   }
 }
 
@@ -31,53 +30,47 @@
 @layer components {
   // Primary button
   .primary-btn {
-    @apply
-    text-lg
-    text-primary-accent-100
-    leading-[1.438rem]
-    font-medium
-    px-8
-    py-4
+    @apply cursor-pointer
     rounded-2xl
     bg-primary-accent-10
+    px-8
+    py-4
+    text-lg
+    font-medium
+    leading-[1.438rem]
+    text-primary-accent-100
     transition-colors
     duration-[0.3s]
-    ease-in-out
-    cursor-pointer;
+    ease-in-out;
   }
-
   .primary-btn:hover {
-    @apply
-    bg-primary-accent-100
+    @apply bg-primary-accent-100
     text-white;
   }
 
   // Secondary button
   .secondary-btn {
-    @apply
-    text-lg
-    leading-[1.438rem]
-    text-white
-    font-medium
-    px-7
-    py-5
+    @apply cursor-pointer
     rounded-2xl
     bg-primary-accent-100
+    px-7
+    py-5
+    text-lg
+    font-medium
+    leading-[1.438rem]
+    text-white
     transition-colors
     duration-[0.3s]
-    ease-in-out
-    cursor-pointer;
+    ease-in-out;
   }
   .secondary-btn:disabled {
-    @apply
-    bg-primary-black-40
+    @apply bg-primary-black-40
     text-primary-black-50
     hover:bg-primary-black-40
     hover:text-primary-black-50;
   }
   .secondary-btn:hover {
-    @apply
-    bg-primary-accent-10
+    @apply bg-primary-accent-10
     text-primary-accent-100;
   }
 

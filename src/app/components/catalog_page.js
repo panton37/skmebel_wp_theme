@@ -48,8 +48,14 @@ resetFilter.addEventListener("click", (e) => {
   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
 });
 
+let productsPerPage = 2;
+// For load more products button on mobile
+let pagesCounter = 2;
+
 // Request object
-let reqParams = {};
+let reqParams = {
+  per_page: productsPerPage,
+};
 
 // Get and render filtered posts to posts container
 const getFilteredPosts = (url) => {
@@ -71,7 +77,7 @@ const getFilteredPosts = (url) => {
     });
 };
 
-// Add price filter inputs listeners
+// Add price range filter inputs listeners
 const getPriceRange = (fromInput, toInput) => {
   return {
     price_from: !fromInput.value ? 0 : +fromInput.value,
@@ -282,37 +288,28 @@ termsContainers.forEach((container, index) => {
   }
 });
 
-// page-${num+1} hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50
-
-const setCurrentPageClasses = (el) => {};
-
-//test
 const paginationContainer = document.querySelector(".pagination");
+// Current page button class
 const firsPageBtnClasses =
   "hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
+// Not current page button class
 const otherPageBtnClasses =
   "hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
 
 const renderPageBtn = (num) => {
   const template = document.createElement("template");
-  template.innerHTML = `<li class="page-${num + 1}" data-id="${num + 1}">${
-    num + 1
-  }</li>`;
+  template.innerHTML = `<li class="page-${num}" data-id="${num}">${num}</li>`;
   paginationContainer.appendChild(template.content);
-  const pageLi = paginationContainer.querySelector(`.page-${num + 1}`);
-  if (num === 0) {
-    firsPageBtnClasses.split(" ").forEach((class_name) => {
-      pageLi.classList.add(class_name);
-    });
+  const pageLi = paginationContainer.querySelector(`.page-${num}`);
+  if (num === 1) {
+    setBtnStyles(pageLi, firsPageBtnClasses);
   } else {
-    otherPageBtnClasses.split(" ").forEach((class_name) => {
-      pageLi.classList.add(class_name);
-    });
+    setBtnStyles(pageLi, otherPageBtnClasses);
   }
 
   pageLi.addEventListener("click", (e) => {
     const currentPageReq = {
-      page: num + 1,
+      page: num,
     };
     reqParams = Object.assign(reqParams, currentPageReq);
 
@@ -341,10 +338,12 @@ const renderPageBtn = (num) => {
   });
 };
 
+// Render pagination
 const renderPagination = (postsNumber) => {
   paginationContainer.innerHTML = "";
-  const pagesNumber = postsNumber / 3;
-  for (let i = 0; i <= pagesNumber - 1; i++) {
+  // Posts per page
+  const pagesNumber = postsNumber / 2;
+  for (let i = 1; i <= pagesNumber; i++) {
     renderPageBtn(i);
   }
 };
@@ -360,3 +359,47 @@ const clearLiStyle = () => {
     });
   }
 };
+
+const setBtnStyles = (el, style) => {
+  style.split(" ").forEach((class_name) => {
+    el.classList.add(class_name);
+  });
+};
+
+// Load more products on mobile
+const mobShowMoreBtn = document.querySelector(".mob-show-more-btn");
+mobShowMoreBtn.addEventListener("click", (e) => {
+  pagesCounter += productsPerPage;
+
+  const numberOfPages = {
+    per_page: pagesCounter,
+  };
+  reqParams = Object.assign(reqParams, numberOfPages);
+
+  loadingSpinner.classList.toggle("hidden");
+
+  axios
+    .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
+      params: reqParams,
+    })
+    .then((response) => {
+      loadingSpinner.classList.toggle("hidden");
+
+      console.log(response.request.responseURL);
+
+      if (response.data) {
+        productsContainer.innerHTML = response.data;
+
+        let postsNumber = response.headers["x-wp-total"];
+
+        if (pagesCounter >= postsNumber) {
+          mobShowMoreBtn.disabled = true;
+        }
+
+        console.log(`pagesCounter = ${pagesCounter}`);
+        console.log(`postsNumber = ${postsNumber}`);
+      } else {
+        productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
+      }
+    });
+});

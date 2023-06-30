@@ -2,7 +2,7 @@
 $props = $args ?? null;
 $post_id = $props['post_id'] ?? null;
 
-$per_page = intval(get_field('products_per_page', $post_id)) ?? 14;
+$per_page = intval(get_field('products_per_page', $post_id)) ?? 2;
 
 $products_page = new WP_Query([
     'post_type' => 'kitchen',
@@ -56,11 +56,13 @@ $products_page = new WP_Query([
             <?php endif; ?>
         </div>
         <div class="w-full flex justify-center">
-            <button class="xl:hidden group flex items-center justify-center space-x-4 primary-btn py-5
-                   text-primary-hover-100 w-fit bg-transparent mb-8 border-2 border-primary-hover-50">
+            <button class="mob-show-more-btn xl:hidden group flex items-center justify-center space-x-4 primary-btn py-5
+                   text-primary-hover-100 w-fit bg-transparent border-2 border-primary-hover-50
+                   disabled:bg-primary-black-40 disabled:text-primary-black-50 disabled:opacity-80
+                   hover:border-none">
                 <span class="">Показать больше</span>
                 <svg width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path class="fill-primary-hover-100 group-hover:fill-white" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
+                    <path class="fill-primary-hover-100 group-hover:fill-white group-disabled:fill-primary-black-50" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
                 </svg>
             </button>
         </div>
