@@ -296,20 +296,22 @@ const firsPageBtnClasses =
 const otherPageBtnClasses =
   "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
 
-const prevBtnTemplate = document.createElement("template");
-const nextBtnTemplate = document.createElement("template");
-prevBtnTemplate.innerHTML = `<button class="prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
-                        Назад
-                      </button>`;
-nextBtnTemplate.innerHTML = `<button class="next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
-                        Далее
-                      </button>`;
+// const prevBtnTemplate = document.createElement("template");
+// const nextBtnTemplate = document.createElement("template");
+// prevBtnTemplate.innerHTML = `<button class="prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
+//                         Назад
+//                       </button>`;
+// nextBtnTemplate.innerHTML = `<button class="next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
+//                         Далее
+//                       </button>`;
 
 const renderPageBtn = (num) => {
   const template = document.createElement("template");
   template.innerHTML = `<li class="page-${num}" data-id="${num}">${num}</li>`;
   paginationContainer.appendChild(template.content);
+
   const pageLi = paginationContainer.querySelector(`.page-${num}`);
+
   if (num === 1) {
     setBtnStyles(pageLi, firsPageBtnClasses);
   } else {
@@ -340,22 +342,48 @@ const renderPageBtn = (num) => {
     clearLiStyle();
     // Set active class to current page button
     setBtnStyles(e.target, firsPageBtnClasses);
+
+    // Hide buttons in range
+    hideButtonsInRange(e.target);
+
+    const getPageLiCount = () => {
+      return Array.from(paginationContainer.querySelectorAll("li.page-btn"))
+        .length;
+    };
+
+    let prevBtn = paginationContainer.querySelector("button.prev-page-btn");
+    let nextBtn = paginationContainer.querySelector("button.next-page-btn");
+
+    +e.target.dataset.id <= 2
+      ? (prevBtn.disabled = true)
+      : (prevBtn.disabled = false);
+
+    getPageLiCount() - e.target.dataset.id <= 1
+      ? (nextBtn.disabled = true)
+      : (nextBtn.disabled = false);
   });
 };
 
-// Hide buttons in 3 buttons range around current
-const hideButtonsInRange = () => {
+// Hide buttons in range
+const hideButtonsInRange = (el) => {
   const allBtns = paginationContainer.querySelectorAll("li.page-btn");
-
-  const hiddenBtns = Array.from(allBtns).filter((btn) => {
-    return (
-      +btn.dataset.id <= +e.target.dataset.id - 2 ||
-      +btn.dataset.id >= +e.target.dataset.id + 2
-    );
-  });
+  let hiddenBtns = [];
+  if (el) {
+    hiddenBtns = Array.from(allBtns).filter((btn) => {
+      return (
+        +btn.dataset.id <= +el.dataset.id - 2 ||
+        +btn.dataset.id >= +el.dataset.id + 2
+      );
+    });
+  } else {
+    hiddenBtns = Array.from(allBtns).slice(3, Array.from(allBtns).length);
+  }
   hiddenBtns.forEach((hbtn) => {
     hbtn.classList.toggle("hidden");
   });
+
+  // console.log("append");
+  // nextBtn.addEventListener("click", (e) => {});
 };
 
 // Render pagination
@@ -366,24 +394,19 @@ const renderPagination = (postsNumber) => {
   for (let i = 1; i <= pagesNumber; i++) {
     renderPageBtn(i);
   }
-
   hideButtonsInRange();
+  createNextPrevBtns();
 
-  paginationContainer.prepend(prevBtnTemplate.content);
-  paginationContainer.append(nextBtnTemplate.content);
+  let prevBtn = paginationContainer.querySelector("button.prev-page-btn");
+  let nextBtn = paginationContainer.querySelector("button.next-page-btn");
 
-  const prevBtn = paginationContainer.querySelector("button.prev-page-btn");
-  const nextBtn = paginationContainer.querySelector("button.next-page-btn");
-
-  +e.target.dataset.id <= 2
-    ? (prevBtn.disabled = true)
-    : (prevBtn.disabled = false);
-
-  allBtns.length - e.target.dataset.id <= 1
-    ? (nextBtn.disabled = true)
-    : (nextBtn.disabled = false);
-
-  nextBtn.addEventListener("click", (e) => {});
+  if (pagesNumber <= 3) {
+    prevBtn.classList.toggle("hidden");
+    nextBtn.classList.toggle("hidden");
+  } else {
+    prevBtn.disabled = true;
+    nextBtn.disabled = false;
+  }
 };
 
 // Setting default styles to page buttons
@@ -395,6 +418,19 @@ const clearLiStyle = () => {
       }
     });
   }
+};
+
+const createNextPrevBtns = () => {
+  const prevBtnTemplate = document.createElement("template");
+  const nextBtnTemplate = document.createElement("template");
+  prevBtnTemplate.innerHTML = `<button class="prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
+                          Назад
+                        </button>`;
+  nextBtnTemplate.innerHTML = `<button class="next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
+                          Далее
+                        </button>`;
+  paginationContainer.prepend(prevBtnTemplate.content);
+  paginationContainer.append(nextBtnTemplate.content);
 };
 
 // UTIL set style to element
