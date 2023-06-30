@@ -238,8 +238,8 @@ saleFirstBtn.addEventListener("click", (e) => {
   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
 });
 
+// Show more taxonomies
 const termsContainers = document.querySelectorAll(".terms-container");
-
 termsContainers.forEach((container, index) => {
   if (container.children.length > 4) {
     const templateTermsBtn = document.createElement("template");
@@ -291,10 +291,19 @@ termsContainers.forEach((container, index) => {
 const paginationContainer = document.querySelector(".pagination");
 // Current page button class
 const firsPageBtnClasses =
-  "hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
+  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
 // Not current page button class
 const otherPageBtnClasses =
-  "hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
+  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
+
+const prevBtnTemplate = document.createElement("template");
+const nextBtnTemplate = document.createElement("template");
+prevBtnTemplate.innerHTML = `<button class="prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
+                        Назад
+                      </button>`;
+nextBtnTemplate.innerHTML = `<button class="next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
+                        Далее
+                      </button>`;
 
 const renderPageBtn = (num) => {
   const template = document.createElement("template");
@@ -329,12 +338,23 @@ const renderPageBtn = (num) => {
         }
       });
     clearLiStyle();
-
     // Set active class to current page button
-    e.target.className = "";
-    firsPageBtnClasses.split(" ").forEach((class_name) => {
-      e.target.classList.add(class_name);
-    });
+    setBtnStyles(e.target, firsPageBtnClasses);
+  });
+};
+
+// Hide buttons in 3 buttons range around current
+const hideButtonsInRange = () => {
+  const allBtns = paginationContainer.querySelectorAll("li.page-btn");
+
+  const hiddenBtns = Array.from(allBtns).filter((btn) => {
+    return (
+      +btn.dataset.id <= +e.target.dataset.id - 2 ||
+      +btn.dataset.id >= +e.target.dataset.id + 2
+    );
+  });
+  hiddenBtns.forEach((hbtn) => {
+    hbtn.classList.toggle("hidden");
   });
 };
 
@@ -346,21 +366,40 @@ const renderPagination = (postsNumber) => {
   for (let i = 1; i <= pagesNumber; i++) {
     renderPageBtn(i);
   }
+
+  hideButtonsInRange();
+
+  paginationContainer.prepend(prevBtnTemplate.content);
+  paginationContainer.append(nextBtnTemplate.content);
+
+  const prevBtn = paginationContainer.querySelector("button.prev-page-btn");
+  const nextBtn = paginationContainer.querySelector("button.next-page-btn");
+
+  +e.target.dataset.id <= 2
+    ? (prevBtn.disabled = true)
+    : (prevBtn.disabled = false);
+
+  allBtns.length - e.target.dataset.id <= 1
+    ? (nextBtn.disabled = true)
+    : (nextBtn.disabled = false);
+
+  nextBtn.addEventListener("click", (e) => {});
 };
 
 // Setting default styles to page buttons
 const clearLiStyle = () => {
   if (paginationContainer.children) {
     Array.from(paginationContainer.children).forEach((btn) => {
-      btn.className = "";
-      otherPageBtnClasses.split(" ").forEach((class_name) => {
-        btn.classList.add(class_name);
-      });
+      if (btn.tagName != "BUTTON") {
+        setBtnStyles(btn, otherPageBtnClasses);
+      }
     });
   }
 };
 
+// UTIL set style to element
 const setBtnStyles = (el, style) => {
+  el.className = "";
   style.split(" ").forEach((class_name) => {
     el.classList.add(class_name);
   });
@@ -384,9 +423,6 @@ mobShowMoreBtn.addEventListener("click", (e) => {
     })
     .then((response) => {
       loadingSpinner.classList.toggle("hidden");
-
-      console.log(response.request.responseURL);
-
       if (response.data) {
         productsContainer.innerHTML = response.data;
 
@@ -395,9 +431,6 @@ mobShowMoreBtn.addEventListener("click", (e) => {
         if (pagesCounter >= postsNumber) {
           mobShowMoreBtn.disabled = true;
         }
-
-        console.log(`pagesCounter = ${pagesCounter}`);
-        console.log(`postsNumber = ${postsNumber}`);
       } else {
         productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
       }
