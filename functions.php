@@ -147,7 +147,7 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
     $args = array_merge([
         'post_type' => 'kitchen',
         'paged' => $request->get_param('page'),
-        'posts_per_page' => 3,
+        'posts_per_page' => 1,
 //        'posts_per_page' => $per_page,
     ], $term_meta ? [
             'meta_key'          => $term_meta,
