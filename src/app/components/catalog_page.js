@@ -381,9 +381,7 @@ const hideButtonsInRange = (el) => {
   hiddenBtns.forEach((hbtn) => {
     hbtn.classList.toggle("hidden");
   });
-
-  // console.log("append");
-  // nextBtn.addEventListener("click", (e) => {});
+  nextBtn.addEventListener("click", (e) => {});
 };
 
 // Render pagination
