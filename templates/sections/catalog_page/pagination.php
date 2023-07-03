@@ -3,6 +3,8 @@
         <ul class="pagination hidden xl:flex flex-row items-center gap-x-2">
 
         </ul>
+        <pagination-component class="pagination hidden xl:flex flex-row items-center gap-x-2">
+        </pagination-component>
     </div>
 </div>
 
