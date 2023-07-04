@@ -44,7 +44,10 @@ resetFilter.addEventListener("click", (e) => {
   inputs.forEach((input) => {
     input.type === "number" ? (input.value = "") : (input.checked = false);
   });
-  reqParams = {};
+  reqParams = {
+    per_page: productsPerPage,
+    page: 1,
+  };
   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
 });
 
@@ -55,7 +58,171 @@ let pagesCounter = 2;
 // Request object
 let reqParams = {
   per_page: productsPerPage,
+  page: 1,
 };
+let postsCounter = 1;
+
+
+
+// Pagination
+const activeBtnClass =
+  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
+const inactiveBtnClass =
+  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
+
+const prevBtnClasses =
+  "prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4";
+const nextBtnClasses =
+  "next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4";
+
+  pageNumber = 1;
+  showAll = false;
+
+const pagintation = document.querySelector('.pagination');
+
+// Render pagination
+const renderPagination = (postsNumber) => {
+  const pagesNumber = postsNumber / 2;
+  let allPagesBtns = [];
+
+  !pageNumber ? (pageNumber = 1) : null;
+
+  if (showAll === false) {
+    if (+pageNumber === 1) {
+      for (let i = 1; i <= 3; i++) {
+        allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
+      }
+    } else {
+      if (+pageNumber >= pagesNumber - 1) {
+        for (let i = pagesNumber - 2; i <= pagesNumber; i++) {
+          allPagesBtns.push(
+            `<div class="page-btn" data-id="${i}">${i}</div>`
+          );
+        }
+      } else {
+        for (let i = 1; i <= pagesNumber; i++) {
+          if (i >= +pageNumber - 1 && i <= +pageNumber + 1) {
+            allPagesBtns.push(
+              `<div class="page-btn" data-id="${i}">${i}</div>`
+            );
+          }
+        }
+      }
+    }
+  } else {
+    for (let i = 1; i <= pagesNumber; i++) {
+      allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
+    }
+  }
+
+  // Append last page button
+  if (pageNumber != pagesNumber) {
+    allPagesBtns.push(
+      `<div class="page-btn" data-id="${pagesNumber}">${pagesNumber}</div>`
+    );
+  }
+
+  // Insert str... page button
+  allPagesBtns.push(`<div data-type="all">Стр...</div>`);
+
+  let html = allPagesBtns.join(" ");
+
+  this.innerHTML = html;
+
+  // Pasting prev & next buttons
+  if (showAll === false) {
+    const prev = document.createElement("template");
+    const next = document.createElement("template");
+    prev.innerHTML = '<button class="prev-page-btn">Назад</button>';
+    next.innerHTML = '<button class="next-page-btn">Далее</button>';
+    pagination.prepend(prev.content);
+    pagination.append(next.content);
+    const prevBtnEl = pagination.querySelector(".prev-page-btn");
+    const nextBtnEl = pagination.querySelector(".next-page-btn");
+    setBtnClasses(prevBtnEl, prevBtnClasses);
+    setBtnClasses(nextBtnEl, nextBtnClasses);
+    nextBtnEl.addEventListener("click", () => {
+      pageNumber = +pageNumber + 1;
+      doRequest();
+    });
+    prevBtnEl.addEventListener("click", () => {
+      pageNumber = +pageNumber - 1;
+      doRequest();
+    });
+    if (+pageNumber === 1) {
+      prevBtnEl.disabled = true;
+    }
+    if (+pageNumber === pagesNumber) {
+      nextBtnEl.disabled = true;
+    }
+  }
+  // end
+
+  // Adding classes
+  const btns = pagination.querySelectorAll(".page-btn");
+  btns.forEach((btn) => {
+    setBtnClasses(btn, inactiveBtnClass);
+  });
+  setBtnClasses(
+    pagination.querySelector("[data-type='all']"),
+    inactiveBtnClass
+  );
+
+  // Set classes to current page button
+  const currentPageBtn = pagination.querySelector(`[data-id="${pageNumber}"]`);
+  setBtnClasses(currentPageBtn, activeBtnClass);
+
+  setListeners();
+}
+
+
+const doRequest = () => {
+  const currentPageReq = { page: pageNumber ? pageNumber : 1 };
+
+  reqParams = Object.assign(reqParams, currentPageReq);
+
+  loadingSpinner.classList.toggle("hidden");
+
+  axios
+    .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
+      params: reqParams,
+    })
+    .then((response) => {
+      if (response.data) {
+        // let postsNumber = response.headers["x-wp-total"];
+        postsCounter = response.headers["x-wp-total"];
+        productsContainer.innerHTML = response.data;
+        renderPagination(postsCounter);
+        loadingSpinner.classList.toggle("hidden");
+      } else {
+        productsContainer.innerHTML = "<p>Таких кухонь нет...</p>";
+      }
+      // postsCounter = response.headers["x-wp-total"];
+    });
+}
+
+const setListeners = () => {
+  const btns = pagintation.querySelectorAll(".page-btn");
+  btns.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      pageNumber = btn.dataset.id;
+      doRequest();
+    });
+  });
+  this.querySelector("[data-type='all']").addEventListener("click", () => {
+    this.showAll === false ? (this.showAll = true) : (this.showAll = false);
+    this.doRequest();
+  });
+}
+
+const setBtnClasses = (el, style) => {
+  el.className = "";
+  style.split(" ").forEach((class_name) => {
+    el.classList.add(class_name);
+  });
+}
+
+
 
 // Get and render filtered posts to posts container
 const getFilteredPosts = (url) => {
@@ -70,10 +237,11 @@ const getFilteredPosts = (url) => {
       console.log(response);
       if (response.data) {
         productsContainer.innerHTML = response.data;
+        renderPagination(postsCounter);
       } else {
         productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
       }
-      renderPagination(response.headers["x-wp-total"]);
+      postsCounter = response.headers["x-wp-total"];
     });
 };
 
@@ -288,157 +456,6 @@ termsContainers.forEach((container, index) => {
   }
 });
 
-const paginationContainer = document.querySelector(".pagination");
-// Current page button class
-const firsPageBtnClasses =
-  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
-// Not current page button class
-const otherPageBtnClasses =
-  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
-
-// const prevBtnTemplate = document.createElement("template");
-// const nextBtnTemplate = document.createElement("template");
-// prevBtnTemplate.innerHTML = `<button class="prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
-//                         Назад
-//                       </button>`;
-// nextBtnTemplate.innerHTML = `<button class="next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
-//                         Далее
-//                       </button>`;
-
-const renderPageBtn = (num) => {
-  const template = document.createElement("template");
-  template.innerHTML = `<li class="page-${num}" data-id="${num}">${num}</li>`;
-  paginationContainer.appendChild(template.content);
-
-  const pageLi = paginationContainer.querySelector(`.page-${num}`);
-
-  if (num === 1) {
-    setBtnStyles(pageLi, firsPageBtnClasses);
-  } else {
-    setBtnStyles(pageLi, otherPageBtnClasses);
-  }
-
-  pageLi.addEventListener("click", (e) => {
-    const currentPageReq = {
-      page: num,
-    };
-    reqParams = Object.assign(reqParams, currentPageReq);
-
-    loadingSpinner.classList.toggle("hidden");
-
-    axios
-      .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
-        params: reqParams,
-      })
-      .then((response) => {
-        loadingSpinner.classList.toggle("hidden");
-        console.log(response);
-        if (response.data) {
-          productsContainer.innerHTML = response.data;
-        } else {
-          productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
-        }
-      });
-    clearLiStyle();
-    // Set active class to current page button
-    setBtnStyles(e.target, firsPageBtnClasses);
-
-    // Hide buttons in range
-    hideButtonsInRange(e.target);
-
-    const getPageLiCount = () => {
-      return Array.from(paginationContainer.querySelectorAll("li.page-btn"))
-        .length;
-    };
-
-    let prevBtn = paginationContainer.querySelector("button.prev-page-btn");
-    let nextBtn = paginationContainer.querySelector("button.next-page-btn");
-
-    +e.target.dataset.id <= 2
-      ? (prevBtn.disabled = true)
-      : (prevBtn.disabled = false);
-
-    getPageLiCount() - e.target.dataset.id <= 1
-      ? (nextBtn.disabled = true)
-      : (nextBtn.disabled = false);
-  });
-};
-
-// Hide buttons in range
-const hideButtonsInRange = (el) => {
-  const allBtns = paginationContainer.querySelectorAll("li.page-btn");
-  let hiddenBtns = [];
-  if (el) {
-    hiddenBtns = Array.from(allBtns).filter((btn) => {
-      return (
-        +btn.dataset.id <= +el.dataset.id - 2 ||
-        +btn.dataset.id >= +el.dataset.id + 2
-      );
-    });
-  } else {
-    hiddenBtns = Array.from(allBtns).slice(3, Array.from(allBtns).length);
-  }
-  hiddenBtns.forEach((hbtn) => {
-    hbtn.classList.toggle("hidden");
-  });
-  nextBtn.addEventListener("click", (e) => {});
-};
-
-// Render pagination
-const renderPagination = (postsNumber) => {
-  paginationContainer.innerHTML = "";
-  // Posts per page
-  const pagesNumber = postsNumber / 2;
-  for (let i = 1; i <= pagesNumber; i++) {
-    renderPageBtn(i);
-  }
-  hideButtonsInRange();
-  createNextPrevBtns();
-
-  let prevBtn = paginationContainer.querySelector("button.prev-page-btn");
-  let nextBtn = paginationContainer.querySelector("button.next-page-btn");
-
-  if (pagesNumber <= 3) {
-    prevBtn.classList.toggle("hidden");
-    nextBtn.classList.toggle("hidden");
-  } else {
-    prevBtn.disabled = true;
-    nextBtn.disabled = false;
-  }
-};
-
-// Setting default styles to page buttons
-const clearLiStyle = () => {
-  if (paginationContainer.children) {
-    Array.from(paginationContainer.children).forEach((btn) => {
-      if (btn.tagName != "BUTTON") {
-        setBtnStyles(btn, otherPageBtnClasses);
-      }
-    });
-  }
-};
-
-const createNextPrevBtns = () => {
-  const prevBtnTemplate = document.createElement("template");
-  const nextBtnTemplate = document.createElement("template");
-  prevBtnTemplate.innerHTML = `<button class="prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
-                          Назад
-                        </button>`;
-  nextBtnTemplate.innerHTML = `<button class="next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4">
-                          Далее
-                        </button>`;
-  paginationContainer.prepend(prevBtnTemplate.content);
-  paginationContainer.append(nextBtnTemplate.content);
-};
-
-// UTIL set style to element
-const setBtnStyles = (el, style) => {
-  el.className = "";
-  style.split(" ").forEach((class_name) => {
-    el.classList.add(class_name);
-  });
-};
-
 // Load more products on mobile
 const mobShowMoreBtn = document.querySelector(".mob-show-more-btn");
 mobShowMoreBtn.addEventListener("click", (e) => {
@@ -471,130 +488,155 @@ mobShowMoreBtn.addEventListener("click", (e) => {
     });
 });
 
-const activeBtnClass =
-  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
-const inactiveBtnClass =
-  "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
 
-const prevBtnClasses =
-  "prev-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4";
-const nextBtnClasses =
-  "next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4";
+// class PaginationComponent extends HTMLElement {
+//   constructor() {
+//     super();
+//   }
 
-// web components
-class PaginationComponent extends HTMLElement {
-  connectedCallback() {
-    this.doRequest();
-  }
+//   pageNumber = 1;
+//   showAll = false;
 
-  pageNumber = 1;
+//   connectedCallback() {
+//     this.doRequest();
+//   }
 
-  renderPagination(postsNumber) {
-    const pagesNumber = postsNumber / 2;
-    let allPagesBtns = [];
+//   renderPagination(postsNumber) {
+//     const pagesNumber = postsNumber / 2;
+//     let allPagesBtns = [];
 
-    !this.pageNumber ? (this.pageNumber = 1) : null;
+//     !this.pageNumber ? (this.pageNumber = 1) : null;
 
-    if (this.pageNumber === 1) {
-      for (let i = 1; i <= 3; i++) {
-        allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
-      }
-    } else {
-      if (this.pageNumber >= pagesNumber - 1) {
-        console.log(this.pageNumber);
-        for (let i = pagesNumber - 2; i <= pagesNumber; i++) {
-          allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
-        }
-      } else {
-        for (let i = 1; i <= pagesNumber; i++) {
-          if (i >= +this.pageNumber - 1 && i <= +this.pageNumber + 1) {
-            allPagesBtns.push(
-              `<div class="page-btn" data-id="${i}">${i}</div>`
-            );
-          }
-        }
-      }
-    }
+//     if (this.showAll === false) {
+//       if (+this.pageNumber === 1) {
+//         for (let i = 1; i <= 3; i++) {
+//           allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
+//         }
+//       } else {
+//         if (+this.pageNumber >= pagesNumber - 1) {
+//           for (let i = pagesNumber - 2; i <= pagesNumber; i++) {
+//             allPagesBtns.push(
+//               `<div class="page-btn" data-id="${i}">${i}</div>`
+//             );
+//           }
+//         } else {
+//           for (let i = 1; i <= pagesNumber; i++) {
+//             if (i >= +this.pageNumber - 1 && i <= +this.pageNumber + 1) {
+//               allPagesBtns.push(
+//                 `<div class="page-btn" data-id="${i}">${i}</div>`
+//               );
+//             }
+//           }
+//         }
+//       }
+//     } else {
+//       for (let i = 1; i <= pagesNumber; i++) {
+//         allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
+//       }
+//     }
 
-    let html = allPagesBtns.join(" ");
+//     // Append last page button
+//     if (this.pageNumber != pagesNumber) {
+//       allPagesBtns.push(
+//         `<div class="page-btn" data-id="${pagesNumber}">${pagesNumber}</div>`
+//       );
+//     }
 
-    this.innerHTML = html;
+//     // Insert str... page button
+//     allPagesBtns.push(`<div data-type="all">Стр...</div>`);
 
-    // Pasting prev & next buttons
-    const prev = document.createElement("template");
-    const next = document.createElement("template");
-    prev.innerHTML = '<button class="prev-page-btn">Назад</button>';
-    next.innerHTML = '<button class="next-page-btn">Далее</button>';
-    this.prepend(prev.content);
-    this.append(next.content);
-    const prevBtnEl = this.querySelector(".prev-page-btn");
-    const nextBtnEl = this.querySelector(".next-page-btn");
-    this.setBtnClasses(prevBtnEl, prevBtnClasses);
-    this.setBtnClasses(nextBtnEl, nextBtnClasses);
-    nextBtnEl.addEventListener("click", () => {
-      this.pageNumber += 1;
-      this.doRequest();
-    });
-    prevBtnEl.addEventListener("click", () => {
-      this.pageNumber -= 1;
-      this.doRequest();
-    });
-    if (+this.pageNumber === 1) {
-      prevBtnEl.disabled = true;
-    }
-    if (+this.pageNumber === pagesNumber) {
-      nextBtnEl.disabled = true;
-    }
-    // end
+//     let html = allPagesBtns.join(" ");
 
-    // Adding classes
-    const btns = this.querySelectorAll(".page-btn");
-    btns.forEach((btn) => {
-      this.setBtnClasses(btn, inactiveBtnClass);
-    });
-    // Set classes to current page button
-    const currentPageBtn = this.querySelector(`[data-id="${this.pageNumber}"]`);
-    this.setBtnClasses(currentPageBtn, activeBtnClass);
+//     this.innerHTML = html;
 
-    this.setListeners();
-  }
-  doRequest() {
-    const currentPageReq = { page: this.pageNumber ? this.pageNumber : 1 };
+//     // Pasting prev & next buttons
+//     if (this.showAll === false) {
+//       const prev = document.createElement("template");
+//       const next = document.createElement("template");
+//       prev.innerHTML = '<button class="prev-page-btn">Назад</button>';
+//       next.innerHTML = '<button class="next-page-btn">Далее</button>';
+//       this.prepend(prev.content);
+//       this.append(next.content);
+//       const prevBtnEl = this.querySelector(".prev-page-btn");
+//       const nextBtnEl = this.querySelector(".next-page-btn");
+//       this.setBtnClasses(prevBtnEl, prevBtnClasses);
+//       this.setBtnClasses(nextBtnEl, nextBtnClasses);
+//       nextBtnEl.addEventListener("click", () => {
+//         this.pageNumber = +this.pageNumber + 1;
+//         this.doRequest();
+//       });
+//       prevBtnEl.addEventListener("click", () => {
+//         this.pageNumber = +this.pageNumber - 1;
+//         this.doRequest();
+//       });
+//       if (+this.pageNumber === 1) {
+//         prevBtnEl.disabled = true;
+//       }
+//       if (+this.pageNumber === pagesNumber) {
+//         nextBtnEl.disabled = true;
+//       }
+//     }
+//     // end
 
-    reqParams = Object.assign(reqParams, currentPageReq);
+//     // Adding classes
+//     const btns = this.querySelectorAll(".page-btn");
+//     btns.forEach((btn) => {
+//       this.setBtnClasses(btn, inactiveBtnClass);
+//     });
+//     this.setBtnClasses(
+//       this.querySelector("[data-type='all']"),
+//       inactiveBtnClass
+//     );
 
-    loadingSpinner.classList.toggle("hidden");
+//     // Set classes to current page button
+//     const currentPageBtn = this.querySelector(`[data-id="${this.pageNumber}"]`);
+//     this.setBtnClasses(currentPageBtn, activeBtnClass);
 
-    axios
-      .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
-        params: reqParams,
-      })
-      .then((response) => {
-        if (response.data) {
-          let postsNumber = response.headers["x-wp-total"];
-          productsContainer.innerHTML = response.data;
-          this.renderPagination(postsNumber);
-          loadingSpinner.classList.toggle("hidden");
-        } else {
-          productsContainer.innerHTML = "<p>Таких кухонь нет...</p>";
-        }
-      });
-  }
-  setListeners() {
-    const btns = this.querySelectorAll(".page-btn");
-    btns.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        this.pageNumber = btn.dataset.id;
-        this.doRequest();
-      });
-    });
-  }
-  setBtnClasses(el, style) {
-    el.className = "";
-    style.split(" ").forEach((class_name) => {
-      el.classList.add(class_name);
-    });
-  }
-}
+//     this.setListeners();
+//   }
+//   doRequest() {
+//     const currentPageReq = { page: this.pageNumber ? this.pageNumber : 1 };
 
-customElements.define("pagination-component", PaginationComponent);
+//     reqParams = Object.assign(reqParams, currentPageReq);
+
+//     loadingSpinner.classList.toggle("hidden");
+
+//     axios
+//       .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
+//         params: reqParams,
+//       })
+//       .then((response) => {
+//         if (response.data) {
+//           // let postsNumber = response.headers["x-wp-total"];
+//           postsCounter = response.headers["x-wp-total"];
+//           productsContainer.innerHTML = response.data;
+//           this.renderPagination(postsCounter);
+//           loadingSpinner.classList.toggle("hidden");
+//         } else {
+//           productsContainer.innerHTML = "<p>Таких кухонь нет...</p>";
+//         }
+//         // postsCounter = response.headers["x-wp-total"];
+//       });
+//   }
+//   setListeners() {
+//     const btns = this.querySelectorAll(".page-btn");
+//     btns.forEach((btn) => {
+//       btn.addEventListener("click", (e) => {
+//         this.pageNumber = btn.dataset.id;
+//         this.doRequest();
+//       });
+//     });
+//     this.querySelector("[data-type='all']").addEventListener("click", () => {
+//       this.showAll === false ? (this.showAll = true) : (this.showAll = false);
+//       this.doRequest();
+//     });
+//   }
+//   setBtnClasses(el, style) {
+//     el.className = "";
+//     style.split(" ").forEach((class_name) => {
+//       el.classList.add(class_name);
+//     });
+//   }
+// }
+
+// customElements.define("pagination-component", PaginationComponent);
