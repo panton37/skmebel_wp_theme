@@ -94,7 +94,7 @@ class Catalog extends Paginator {
             templateTermsBtn.innerHTML = `
             <button class="show-more-terms-btn-${index} group flex w-full mt-6 items-center justify-center space-x-4 primary-btn py-5
                   text-primary-hover-100 bg-transparent mb-8 border-2 border-primary-hover-50"
-                  data-isshown="0">
+                  data-is_shown="0">
                 <span class="">Показать больше</span>
                 <svg class="transition-transform ease-in-out duration-300" width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path class="fill-primary-hover-100 group-hover:fill-white transition-transform" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
@@ -102,11 +102,11 @@ class Catalog extends Paginator {
             </button>`;
         container.appendChild(templateTermsBtn.content);
 
-        const showTermsBtn = document.querySelector(`.show-more-terms-btn-${index}`);
+        const showTermsBtn = container.querySelector(`.show-more-terms-btn-${index}`);
         showTermsBtn.addEventListener("click", () => {
 
-          if (showTermsBtn.dataset.isshown === "0") {
-            showTermsBtn.dataset.isshown = "1";
+          if (showTermsBtn.dataset.is_shown === "0") {
+            showTermsBtn.dataset.is_shown = "1";
             showTermsBtn.querySelector("span").innerText = "Показать меньше";
             showTermsBtn.querySelector("svg").classList.add("rotate-180");
             Array.from(container.children).forEach((input) => {
@@ -115,7 +115,7 @@ class Catalog extends Paginator {
                 : null;
             });
           } else {
-            showTermsBtn.dataset.isshown = "0";
+            showTermsBtn.dataset.is_shown = "0";
             showTermsBtn.querySelector("span").innerText = "Показать больше";
             showTermsBtn.querySelector("svg").classList.remove("rotate-180");
             Array.from(container.children).forEach((input, index) => {
@@ -137,6 +137,40 @@ class Catalog extends Paginator {
     });
   }
 
+  // Load more products on mobile
+#loadMoreMobile() {
+  const mobShowMoreBtn = document.querySelector(".mob-show-more-btn");
+mobShowMoreBtn.addEventListener("click", (e) => {
+  pagesCounter += productsPerPage;
+
+  const numberOfPages = {
+    per_page: pagesCounter,
+  };
+  reqParams = Object.assign(reqParams, numberOfPages);
+
+  loadingSpinner.classList.toggle("hidden");
+
+  axios
+    .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
+      params: reqParams,
+    })
+    .then((response) => {
+      loadingSpinner.classList.toggle("hidden");
+      if (response.data) {
+        productsContainer.innerHTML = response.data;
+
+        let postsNumber = response.headers["x-wp-total"];
+
+        if (pagesCounter >= postsNumber) {
+          mobShowMoreBtn.disabled = true;
+        }
+      } else {
+        productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
+      }
+    });
+});
+}
+
   #setHandlers() {
     this.#listenCheckboxes(this.elements.styles, '.style-checkbox', 'style');
     this.#listenCheckboxes(this.elements.sizes, '.size-checkbox', 'size');
@@ -149,6 +183,7 @@ class Catalog extends Paginator {
     this.#listenSort();
     this.#listenReset();
     this.#hideTerms();
+    this.#loadMoreMobile();
   }
 }
 
@@ -168,55 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-// // Show more taxonomies
-// const termsContainers = document.querySelectorAll(".terms-container");
-// termsContainers.forEach((container, index) => {
-//   if (container.children.length > 4) {
-//     const templateTermsBtn = document.createElement("template");
-//     templateTermsBtn.innerHTML = `<button class="show-more-terms-btn-${index} group flex w-full mt-6 items-center justify-center space-x-4 primary-btn py-5
-//                    text-primary-hover-100 bg-transparent mb-8 border-2 border-primary-hover-50"
-//                    data-isshown="0">
-//             <span class="">Показать больше</span>
-//             <svg class="transition-transform ease-in-out duration-300" width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-//                 <path class="fill-primary-hover-100 group-hover:fill-white transition-transform" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
-//             </svg>
-//         </button>`;
-//     container.appendChild(templateTermsBtn.content);
 
-//     const showTermsBtn = document.querySelector(
-//       `.show-more-terms-btn-${index}`
-//     );
-//     showTermsBtn.addEventListener("click", () => {
-//       if (showTermsBtn.dataset.isshown === "0") {
-//         showTermsBtn.dataset.isshown = "1";
-//         showTermsBtn.querySelector("span").innerText = "Показать меньше";
-//         showTermsBtn.querySelector("svg").classList.add("rotate-180");
-//         Array.from(container.children).forEach((input) => {
-//           input.classList.contains("hidden") && input.tagName === "LABEL"
-//             ? input.classList.remove("hidden")
-//             : null;
-//         });
-//       } else {
-//         showTermsBtn.dataset.isshown = "0";
-//         showTermsBtn.querySelector("span").innerText = "Показать больше";
-//         showTermsBtn.querySelector("svg").classList.remove("rotate-180");
-//         Array.from(container.children).forEach((input, index) => {
-//           if (index > 4) {
-//             !input.classList.contains("hidden") && input.tagName === "LABEL"
-//               ? input.classList.add("hidden")
-//               : null;
-//           }
-//         });
-//       }
-//     });
-
-//     Array.from(container.children).forEach((input, index) => {
-//       index > 4 && input.tagName === "LABEL"
-//         ? input.classList.add("hidden")
-//         : null;
-//     });
-//   }
-// });
 
 
 
