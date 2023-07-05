@@ -1,4 +1,88 @@
-import axios from "axios";
+import Paginator from "./paginator";
+
+class Catalog extends Paginator {
+  action = '/wp/v2/custom_kitchen';
+
+  constructor(conf) {
+    super(conf);
+
+    this.elements.prices = this.elements.main.querySelector('.prices');
+    this.elements.sizes = this.elements.main.querySelector('.sizes');
+    this.elements.styles = this.elements.main.querySelector('.styles');
+    this.elements.material = this.elements.main.querySelector('.material');
+    this.elements.colors = this.elements.main.querySelector('.colors');
+
+    this.#setHandlers();
+  }
+
+
+
+  // Add price range filter inputs listeners
+  #listenPrice(priceFrom, priceTo) {
+    ["change", "keydown"].forEach(evt => {
+      priceFrom.addEventListener(evt, e => {
+        if (evt === "keydown" && e.keyCode === 13) {
+          this.setParam('price_from', priceFrom.value);
+        }
+      });
+      priceTo.addEventListener(evt, (e) => {
+        if (evt === "keydown" && e.keyCode === 13) {
+          this.setParam('price_to', priceTo.value);
+        }
+      });
+    });
+  }
+
+  #listenCheckboxes(boxes, checkboxName, filterName) {
+    boxes.querySelectorAll(checkboxName).forEach(box => {
+      box.addEventListener('change', async () => {
+        const checkedArr = [];
+        let val = '';
+        boxes.querySelectorAll(checkboxName).forEach((checkBox) => {
+          checkBox.checked === true
+            ? checkedArr.push(checkBox.dataset.id)
+            : checkedArr.slice(checkedArr.indexOf(checkBox.dataset.id), 1);
+        });
+        checkedArr.length ? val = checkedArr.join(",") : null;
+  
+        await this.setParam(filterName, val);
+      });
+    })
+  }
+
+  #setHandlers() {
+    this.#listenCheckboxes(this.elements.styles, '.style-checkbox', 'style');
+    this.#listenCheckboxes(this.elements.sizes, '.size-checkbox', 'size');
+    this.#listenCheckboxes(this.elements.material, '.material-checkbox', 'material');
+    this.#listenCheckboxes(this.elements.colors, '.color-checkbox', 'color');
+    this.#listenPrice(
+      this.elements.prices.querySelector('.from-price'),
+      this.elements.prices.querySelector('.to-price'),
+    );
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.querySelector('.catalog_main');
+
+  if (el) {
+    new Catalog({
+      el,
+      params: {
+        per_page: 2
+      }
+    });
+  }
+});
+
+// config
+/*
+{
+  el: ...,
+  per_page,
+  ...
+}
+*/
 
 const productsContainer = document.querySelector(".products");
 
@@ -21,50 +105,8 @@ const closeFilterBtn = document.querySelector(".close-filter-btn");
 const filter = document.querySelector(".filter-block");
 const products = document.querySelector(".products-block");
 
-// Toggle sorting options on mobile
-mobSortBtn.addEventListener("click", (e) => {
-  mobSortOptions.classList.toggle("hidden");
-});
+const pagination = document.querySelector('.pagination');
 
-// Toggle filters on mobile
-showFilterBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  filter.classList.toggle("hidden");
-  products.classList.toggle("hidden");
-});
-closeFilterBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  filter.classList.toggle("hidden");
-  products.classList.toggle("hidden");
-});
-
-// Reset filters
-resetFilter.addEventListener("click", (e) => {
-  const inputs = filterForm.querySelectorAll("input");
-  inputs.forEach((input) => {
-    input.type === "number" ? (input.value = "") : (input.checked = false);
-  });
-  reqParams = {
-    per_page: productsPerPage,
-    page: 1,
-  };
-  getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-});
-
-let productsPerPage = 2;
-// For load more products button on mobile
-let pagesCounter = 2;
-
-// Request object
-let reqParams = {
-  per_page: productsPerPage,
-  page: 1,
-};
-let postsCounter = 1;
-
-
-
-// Pagination
 const activeBtnClass =
   "page-btn hover:bg-primary-hover-50 ease-in-out duration-300 transition-colors bg-primary-hover-50 rounded-2xl text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4 border-2 border-primary-hover-50";
 const inactiveBtnClass =
@@ -75,445 +117,35 @@ const prevBtnClasses =
 const nextBtnClasses =
   "next-page-btn disabled:text-primary-black-45 disabled:hover:opacity-100 disabled:cursor-default hover:opacity-80 ease-in-out duration-300 transition-opacity text-[18px] text-primary-hover-100 cursor-pointer font-medium px-8 py-4";
 
-  pageNumber = 1;
-  showAll = false;
+  let pageNumber = 1;
+  let showAll = false;
 
-const pagintation = document.querySelector('.pagination');
+  let productsPerPage = 2;
+// For load more products button on mobile
+let pagesCounter = 2;
+
+// Request object
+let reqParams = {
+  per_page: productsPerPage,
+  page: 1,
+};
+let postsCounter;
 
 // Render pagination
-const renderPagination = (postsNumber) => {
-  const pagesNumber = postsNumber / 2;
-  let allPagesBtns = [];
+// const renderPagination = (postsNumber) => {
+//   const pagesNumber = Math.trunc(postsNumber / 2);
+//   let allPagesBtns = [];
 
-  !pageNumber ? (pageNumber = 1) : null;
+//   !pageNumber ? (pageNumber = 1) : null;
 
-  if (showAll === false) {
-    if (+pageNumber === 1) {
-      for (let i = 1; i <= 3; i++) {
-        allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
-      }
-    } else {
-      if (+pageNumber >= pagesNumber - 1) {
-        for (let i = pagesNumber - 2; i <= pagesNumber; i++) {
-          allPagesBtns.push(
-            `<div class="page-btn" data-id="${i}">${i}</div>`
-          );
-        }
-      } else {
-        for (let i = 1; i <= pagesNumber; i++) {
-          if (i >= +pageNumber - 1 && i <= +pageNumber + 1) {
-            allPagesBtns.push(
-              `<div class="page-btn" data-id="${i}">${i}</div>`
-            );
-          }
-        }
-      }
-    }
-  } else {
-    for (let i = 1; i <= pagesNumber; i++) {
-      allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
-    }
-  }
-
-  // Append last page button
-  if (pageNumber != pagesNumber) {
-    allPagesBtns.push(
-      `<div class="page-btn" data-id="${pagesNumber}">${pagesNumber}</div>`
-    );
-  }
-
-  // Insert str... page button
-  allPagesBtns.push(`<div data-type="all">Стр...</div>`);
-
-  let html = allPagesBtns.join(" ");
-
-  this.innerHTML = html;
-
-  // Pasting prev & next buttons
-  if (showAll === false) {
-    const prev = document.createElement("template");
-    const next = document.createElement("template");
-    prev.innerHTML = '<button class="prev-page-btn">Назад</button>';
-    next.innerHTML = '<button class="next-page-btn">Далее</button>';
-    pagination.prepend(prev.content);
-    pagination.append(next.content);
-    const prevBtnEl = pagination.querySelector(".prev-page-btn");
-    const nextBtnEl = pagination.querySelector(".next-page-btn");
-    setBtnClasses(prevBtnEl, prevBtnClasses);
-    setBtnClasses(nextBtnEl, nextBtnClasses);
-    nextBtnEl.addEventListener("click", () => {
-      pageNumber = +pageNumber + 1;
-      doRequest();
-    });
-    prevBtnEl.addEventListener("click", () => {
-      pageNumber = +pageNumber - 1;
-      doRequest();
-    });
-    if (+pageNumber === 1) {
-      prevBtnEl.disabled = true;
-    }
-    if (+pageNumber === pagesNumber) {
-      nextBtnEl.disabled = true;
-    }
-  }
-  // end
-
-  // Adding classes
-  const btns = pagination.querySelectorAll(".page-btn");
-  btns.forEach((btn) => {
-    setBtnClasses(btn, inactiveBtnClass);
-  });
-  setBtnClasses(
-    pagination.querySelector("[data-type='all']"),
-    inactiveBtnClass
-  );
-
-  // Set classes to current page button
-  const currentPageBtn = pagination.querySelector(`[data-id="${pageNumber}"]`);
-  setBtnClasses(currentPageBtn, activeBtnClass);
-
-  setListeners();
-}
-
-
-const doRequest = () => {
-  const currentPageReq = { page: pageNumber ? pageNumber : 1 };
-
-  reqParams = Object.assign(reqParams, currentPageReq);
-
-  loadingSpinner.classList.toggle("hidden");
-
-  axios
-    .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
-      params: reqParams,
-    })
-    .then((response) => {
-      if (response.data) {
-        // let postsNumber = response.headers["x-wp-total"];
-        postsCounter = response.headers["x-wp-total"];
-        productsContainer.innerHTML = response.data;
-        renderPagination(postsCounter);
-        loadingSpinner.classList.toggle("hidden");
-      } else {
-        productsContainer.innerHTML = "<p>Таких кухонь нет...</p>";
-      }
-      // postsCounter = response.headers["x-wp-total"];
-    });
-}
-
-const setListeners = () => {
-  const btns = pagintation.querySelectorAll(".page-btn");
-  btns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      pageNumber = btn.dataset.id;
-      doRequest();
-    });
-  });
-  this.querySelector("[data-type='all']").addEventListener("click", () => {
-    this.showAll === false ? (this.showAll = true) : (this.showAll = false);
-    this.doRequest();
-  });
-}
-
-const setBtnClasses = (el, style) => {
-  el.className = "";
-  style.split(" ").forEach((class_name) => {
-    el.classList.add(class_name);
-  });
-}
-
-
-
-// Get and render filtered posts to posts container
-const getFilteredPosts = (url) => {
-  loadingSpinner.classList.toggle("hidden");
-
-  axios
-    .get(url, {
-      params: reqParams,
-    })
-    .then((response) => {
-      loadingSpinner.classList.toggle("hidden");
-      console.log(response);
-      if (response.data) {
-        productsContainer.innerHTML = response.data;
-        renderPagination(postsCounter);
-      } else {
-        productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
-      }
-      postsCounter = response.headers["x-wp-total"];
-    });
-};
-
-// Add price range filter inputs listeners
-const getPriceRange = (fromInput, toInput) => {
-  return {
-    price_from: !fromInput.value ? 0 : +fromInput.value,
-    price_to: !toInput.value ? 999999999 : +toInput.value,
-  };
-};
-// Send request only on Enter key hit
-["change", "keydown"].forEach((evt) => {
-  priceFrom.addEventListener(evt, (e) => {
-    if (evt === "keydown" && e.keyCode === 13) {
-      reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
-      getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-    }
-  });
-  priceTo.addEventListener(evt, (e) => {
-    if (evt === "keydown" && e.keyCode === 13) {
-      reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
-      getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-    }
-  });
-});
-
-// Add kitchen style checkboxes listeners
-const styleCheckboxes = document.querySelectorAll(".style-checkbox");
-styleCheckboxes.forEach((box) => {
-  box.addEventListener("change", (e) => {
-    const checked = [];
-    styleCheckboxes.forEach((checkbox) => {
-      checkbox.checked === true
-        ? checked.push(checkbox.dataset.id)
-        : checked.slice(checked.indexOf(checkbox.dataset.id), 1);
-    });
-    reqParams.category = checked.join(",");
-    if (checked.length > 0) {
-      reqParams.category = checked.join(",");
-    } else {
-      if (reqParams.category) {
-        delete reqParams.category;
-      }
-    }
-    getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-  });
-});
-
-// Add kitchen size checkboxes listeners
-const sizeCheckboxes = document.querySelectorAll(".size-checkbox");
-sizeCheckboxes.forEach((sizeBox) => {
-  sizeBox.addEventListener("change", (e) => {
-    const checkedSize = [];
-    sizeCheckboxes.forEach((checkBox) => {
-      checkBox.checked === true
-        ? checkedSize.push(checkBox.dataset.id)
-        : checkedSize.slice(checkedSize.indexOf(checkBox.dataset.id), 1);
-    });
-    if (checkedSize.length > 0) {
-      reqParams.size = checkedSize.join(",");
-    } else {
-      if (reqParams.size) {
-        delete reqParams.size;
-      }
-    }
-    getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-  });
-});
-
-// Add kitchen material checkboxes listeners
-const materialCheckboxes = document.querySelectorAll(".material-checkbox");
-materialCheckboxes.forEach((materialBox) => {
-  materialBox.addEventListener("change", (e) => {
-    const checkedMaterial = [];
-    materialCheckboxes.forEach((checkBox) => {
-      checkBox.checked === true
-        ? checkedMaterial.push(checkBox.dataset.id)
-        : checkedMaterial.slice(
-            checkedMaterial.indexOf(checkBox.dataset.id),
-            1
-          );
-    });
-    if (checkedMaterial.length > 0) {
-      reqParams.material = checkedMaterial.join(",");
-    } else {
-      if (reqParams.material) {
-        delete reqParams.material;
-      }
-    }
-    getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-  });
-});
-
-// Add kitchen color checkboxes listeners
-const colorCheckboxes = document.querySelectorAll(".color-checkbox");
-colorCheckboxes.forEach((colorBox) => {
-  colorBox.addEventListener("change", (e) => {
-    const checkedColor = [];
-    colorCheckboxes.forEach((checkBox) => {
-      checkBox.checked === true
-        ? checkedColor.push(checkBox.dataset.id)
-        : checkedColor.slice(checkedColor.indexOf(checkBox.dataset.id), 1);
-    });
-    if (checkedColor.length > 0) {
-      reqParams.color = checkedColor.join(",");
-    } else {
-      if (reqParams.color) {
-        delete reqParams.color;
-      }
-    }
-    getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-  });
-});
-
-// SORTING KITCHENS
-// Cheap first
-cheapFirstBtn.addEventListener("click", (e) => {
-  const orderByReq = {
-    order: "ASC",
-    meta_key: "kitchen_price",
-  };
-  reqParams = Object.assign(reqParams, orderByReq);
-
-  if (mobSortBtn.classList.contains("flex")) {
-    mobSortBtn.querySelector(".sort-btn-text").textContent =
-      cheapFirstBtn.textContent;
-    mobSortOptions.classList.toggle("hidden");
-  }
-
-  getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-});
-// Expensive first
-expensiveFirstBtn.addEventListener("click", (e) => {
-  const orderByReq = {
-    order: "DESC",
-    meta_key: "kitchen_price",
-  };
-  reqParams = Object.assign(reqParams, orderByReq);
-
-  if (mobSortBtn.classList.contains("flex")) {
-    mobSortBtn.querySelector(".sort-btn-text").textContent =
-      expensiveFirstBtn.textContent;
-    mobSortOptions.classList.toggle("hidden");
-  }
-
-  getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-});
-// Order by sale size
-saleFirstBtn.addEventListener("click", (e) => {
-  const orderByReq = {
-    order: "DESC",
-    meta_key: "kitchen_sale",
-  };
-  reqParams = Object.assign(reqParams, orderByReq);
-
-  if (mobSortBtn.classList.contains("flex")) {
-    mobSortBtn.querySelector(".sort-btn-text").textContent =
-      saleFirstBtn.textContent;
-    mobSortOptions.classList.toggle("hidden");
-  }
-
-  getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
-});
-
-// Show more taxonomies
-const termsContainers = document.querySelectorAll(".terms-container");
-termsContainers.forEach((container, index) => {
-  if (container.children.length > 4) {
-    const templateTermsBtn = document.createElement("template");
-    templateTermsBtn.innerHTML = `<button class="show-more-terms-btn-${index} group flex w-full mt-6 items-center justify-center space-x-4 primary-btn py-5
-                   text-primary-hover-100 bg-transparent mb-8 border-2 border-primary-hover-50"
-                   data-isshown="0">
-            <span class="">Показать больше</span>
-            <svg class="transition-transform ease-in-out duration-300" width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path class="fill-primary-hover-100 group-hover:fill-white transition-transform" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
-            </svg>
-        </button>`;
-    container.appendChild(templateTermsBtn.content);
-
-    const showTermsBtn = document.querySelector(
-      `.show-more-terms-btn-${index}`
-    );
-    showTermsBtn.addEventListener("click", () => {
-      if (showTermsBtn.dataset.isshown === "0") {
-        showTermsBtn.dataset.isshown = "1";
-        showTermsBtn.querySelector("span").innerText = "Показать меньше";
-        showTermsBtn.querySelector("svg").classList.add("rotate-180");
-        Array.from(container.children).forEach((input) => {
-          input.classList.contains("hidden") && input.tagName === "LABEL"
-            ? input.classList.remove("hidden")
-            : null;
-        });
-      } else {
-        showTermsBtn.dataset.isshown = "0";
-        showTermsBtn.querySelector("span").innerText = "Показать больше";
-        showTermsBtn.querySelector("svg").classList.remove("rotate-180");
-        Array.from(container.children).forEach((input, index) => {
-          if (index > 4) {
-            !input.classList.contains("hidden") && input.tagName === "LABEL"
-              ? input.classList.add("hidden")
-              : null;
-          }
-        });
-      }
-    });
-
-    Array.from(container.children).forEach((input, index) => {
-      index > 4 && input.tagName === "LABEL"
-        ? input.classList.add("hidden")
-        : null;
-    });
-  }
-});
-
-// Load more products on mobile
-const mobShowMoreBtn = document.querySelector(".mob-show-more-btn");
-mobShowMoreBtn.addEventListener("click", (e) => {
-  pagesCounter += productsPerPage;
-
-  const numberOfPages = {
-    per_page: pagesCounter,
-  };
-  reqParams = Object.assign(reqParams, numberOfPages);
-
-  loadingSpinner.classList.toggle("hidden");
-
-  axios
-    .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
-      params: reqParams,
-    })
-    .then((response) => {
-      loadingSpinner.classList.toggle("hidden");
-      if (response.data) {
-        productsContainer.innerHTML = response.data;
-
-        let postsNumber = response.headers["x-wp-total"];
-
-        if (pagesCounter >= postsNumber) {
-          mobShowMoreBtn.disabled = true;
-        }
-      } else {
-        productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
-      }
-    });
-});
-
-
-// class PaginationComponent extends HTMLElement {
-//   constructor() {
-//     super();
-//   }
-
-//   pageNumber = 1;
-//   showAll = false;
-
-//   connectedCallback() {
-//     this.doRequest();
-//   }
-
-//   renderPagination(postsNumber) {
-//     const pagesNumber = postsNumber / 2;
-//     let allPagesBtns = [];
-
-//     !this.pageNumber ? (this.pageNumber = 1) : null;
-
-//     if (this.showAll === false) {
-//       if (+this.pageNumber === 1) {
+//   if(+pagesNumber >= 3) {
+//     if (showAll === false) {
+//       if (+pageNumber === 1) {
 //         for (let i = 1; i <= 3; i++) {
 //           allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
 //         }
 //       } else {
-//         if (+this.pageNumber >= pagesNumber - 1) {
+//         if (+pageNumber >= pagesNumber - 1) {
 //           for (let i = pagesNumber - 2; i <= pagesNumber; i++) {
 //             allPagesBtns.push(
 //               `<div class="page-btn" data-id="${i}">${i}</div>`
@@ -521,7 +153,7 @@ mobShowMoreBtn.addEventListener("click", (e) => {
 //           }
 //         } else {
 //           for (let i = 1; i <= pagesNumber; i++) {
-//             if (i >= +this.pageNumber - 1 && i <= +this.pageNumber + 1) {
+//             if (i >= +pageNumber - 1 && i <= +pageNumber + 1) {
 //               allPagesBtns.push(
 //                 `<div class="page-btn" data-id="${i}">${i}</div>`
 //               );
@@ -534,109 +166,400 @@ mobShowMoreBtn.addEventListener("click", (e) => {
 //         allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
 //       }
 //     }
-
-//     // Append last page button
-//     if (this.pageNumber != pagesNumber) {
-//       allPagesBtns.push(
-//         `<div class="page-btn" data-id="${pagesNumber}">${pagesNumber}</div>`
-//       );
+//   } else {
+//     for (let i = 1; i <= pagesNumber; i++) {
+//       allPagesBtns.push(`<div class="page-btn" data-id="${i}">${i}</div>`);
 //     }
+//   }
 
-//     // Insert str... page button
+//   // Append last page button
+//   if (pagesNumber > 4 && pageNumber <= pagesNumber - 2 && showAll != true) {
+//     allPagesBtns.push(
+//       `<div class="page-btn" data-id="${pagesNumber}">${pagesNumber}</div>`
+//     );
+//   }
+
+//   // Insert str... page button
+//   if(pagesNumber > 4) {
 //     allPagesBtns.push(`<div data-type="all">Стр...</div>`);
+//   }
 
-//     let html = allPagesBtns.join(" ");
+//   let html = allPagesBtns.join(" ");
 
-//     this.innerHTML = html;
+//   pagination.innerHTML = html;
 
-//     // Pasting prev & next buttons
-//     if (this.showAll === false) {
-//       const prev = document.createElement("template");
-//       const next = document.createElement("template");
-//       prev.innerHTML = '<button class="prev-page-btn">Назад</button>';
-//       next.innerHTML = '<button class="next-page-btn">Далее</button>';
-//       this.prepend(prev.content);
-//       this.append(next.content);
-//       const prevBtnEl = this.querySelector(".prev-page-btn");
-//       const nextBtnEl = this.querySelector(".next-page-btn");
-//       this.setBtnClasses(prevBtnEl, prevBtnClasses);
-//       this.setBtnClasses(nextBtnEl, nextBtnClasses);
-//       nextBtnEl.addEventListener("click", () => {
-//         this.pageNumber = +this.pageNumber + 1;
-//         this.doRequest();
-//       });
-//       prevBtnEl.addEventListener("click", () => {
-//         this.pageNumber = +this.pageNumber - 1;
-//         this.doRequest();
-//       });
-//       if (+this.pageNumber === 1) {
-//         prevBtnEl.disabled = true;
-//       }
-//       if (+this.pageNumber === pagesNumber) {
-//         nextBtnEl.disabled = true;
-//       }
-//     }
-//     // end
-
-//     // Adding classes
-//     const btns = this.querySelectorAll(".page-btn");
-//     btns.forEach((btn) => {
-//       this.setBtnClasses(btn, inactiveBtnClass);
+//   // Pasting prev & next buttons
+//   if (showAll === false) {
+//     const prev = document.createElement("template");
+//     const next = document.createElement("template");
+//     prev.innerHTML = '<button class="prev-page-btn">Назад</button>';
+//     next.innerHTML = '<button class="next-page-btn">Далее</button>';
+//     pagination.prepend(prev.content);
+//     pagination.append(next.content);
+//     const prevBtnEl = pagination.querySelector(".prev-page-btn");
+//     const nextBtnEl = pagination.querySelector(".next-page-btn");
+//     setBtnClasses(prevBtnEl, prevBtnClasses);
+//     setBtnClasses(nextBtnEl, nextBtnClasses);
+//     nextBtnEl.addEventListener("click", () => {
+//       pageNumber = +pageNumber + 1;
+//       doRequest();
 //     });
-//     this.setBtnClasses(
-//       this.querySelector("[data-type='all']"),
+//     prevBtnEl.addEventListener("click", () => {
+//       pageNumber = +pageNumber - 1;
+//       doRequest();
+//     });
+//     if (+pageNumber === 1) {
+//       prevBtnEl.disabled = true;
+//     }
+//     if (+pageNumber === pagesNumber) {
+//       nextBtnEl.disabled = true;
+//     }
+//   }
+//   // end
+
+//   // Adding classes
+//   const btns = pagination.querySelectorAll(".page-btn");
+//   btns.forEach((btn) => {
+//     setBtnClasses(btn, inactiveBtnClass);
+//   });
+//   if(pagination.querySelector("[data-type='all']")) {
+//     setBtnClasses(
+//       pagination.querySelector("[data-type='all']"),
 //       inactiveBtnClass
 //     );
-
-//     // Set classes to current page button
-//     const currentPageBtn = this.querySelector(`[data-id="${this.pageNumber}"]`);
-//     this.setBtnClasses(currentPageBtn, activeBtnClass);
-
-//     this.setListeners();
 //   }
-//   doRequest() {
-//     const currentPageReq = { page: this.pageNumber ? this.pageNumber : 1 };
 
-//     reqParams = Object.assign(reqParams, currentPageReq);
+//   // Set classes to current page button
+//   const currentPageBtn = pagination.querySelector(`[data-id="${pageNumber}"]`);
+//   setBtnClasses(currentPageBtn, activeBtnClass);
 
-//     loadingSpinner.classList.toggle("hidden");
+//   setListeners();
+// }
+// // end pag
 
-//     axios
-//       .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
-//         params: reqParams,
-//       })
-//       .then((response) => {
-//         if (response.data) {
-//           // let postsNumber = response.headers["x-wp-total"];
-//           postsCounter = response.headers["x-wp-total"];
-//           productsContainer.innerHTML = response.data;
-//           this.renderPagination(postsCounter);
-//           loadingSpinner.classList.toggle("hidden");
-//         } else {
-//           productsContainer.innerHTML = "<p>Таких кухонь нет...</p>";
+// // Toggle sorting options on mobile
+// mobSortBtn.addEventListener("click", (e) => {
+//   mobSortOptions.classList.toggle("hidden");
+// });
+
+// // Toggle filters on mobile
+// showFilterBtn.addEventListener("click", (e) => {
+//   e.preventDefault();
+//   filter.classList.toggle("hidden");
+//   products.classList.toggle("hidden");
+// });
+// closeFilterBtn.addEventListener("click", (e) => {
+//   e.preventDefault();
+//   filter.classList.toggle("hidden");
+//   products.classList.toggle("hidden");
+// });
+
+// // Reset filters
+// resetFilter.addEventListener("click", (e) => {
+//   const inputs = filterForm.querySelectorAll("input");
+//   inputs.forEach((input) => {
+//     input.type === "number" ? (input.value = "") : (input.checked = false);
+//   });
+//   reqParams = {
+//     per_page: productsPerPage,
+//     page: 1,
+//   };
+//   getFilteredPosts("/wp-json/wp/v2/custom_kitchen");
+// });
+
+// // Get and render filtered posts to posts container
+// const getFilteredPosts = (url) => {
+//   loadingSpinner.classList.toggle("hidden");
+
+//   axios
+//     .get(url, {
+//       params: reqParams,
+//     })
+//     .then((response) => {
+//       loadingSpinner.classList.toggle("hidden");
+//       console.log(response);
+//       if (response.data) {
+//         postsCounter = response.headers["x-wp-total"];
+//         productsContainer.innerHTML = response.data;
+//         renderPagination(postsCounter);
+//       } else {
+//         productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
+//       }
+//     });
+// };
+
+// // Add price range filter inputs listeners
+// const getPriceRange = (fromInput, toInput) => {
+//   return {
+//     price_from: !fromInput.value ? 0 : +fromInput.value,
+//     price_to: !toInput.value ? 999999999 : +toInput.value,
+//   };
+// };
+// // Send request only on Enter key hit
+// ["change", "keydown"].forEach((evt) => {
+//   priceFrom.addEventListener(evt, (e) => {
+//     if (evt === "keydown" && e.keyCode === 13) {
+//       reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
+//       getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+//     }
+//   });
+//   priceTo.addEventListener(evt, (e) => {
+//     if (evt === "keydown" && e.keyCode === 13) {
+//       reqParams = Object.assign(reqParams, getPriceRange(priceFrom, priceTo));
+//       getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+//     }
+//   });
+// });
+
+// // Add kitchen style checkboxes listeners
+// const styleCheckboxes = document.querySelectorAll(".style-checkbox");
+// styleCheckboxes.forEach((box) => {
+//   box.addEventListener("change", (e) => {
+//     const checked = [];
+//     styleCheckboxes.forEach((checkbox) => {
+//       checkbox.checked === true
+//         ? checked.push(checkbox.dataset.id)
+//         : checked.slice(checked.indexOf(checkbox.dataset.id), 1);
+//     });
+//     reqParams.category = checked.join(",");
+//     if (checked.length > 0) {
+//       reqParams.category = checked.join(",");
+//     } else {
+//       if (reqParams.category) {
+//         delete reqParams.category;
+//       }
+//     }
+//     getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+//   });
+// });
+
+// // Add kitchen size checkboxes listeners
+// const sizeCheckboxes = document.querySelectorAll(".size-checkbox");
+// sizeCheckboxes.forEach((sizeBox) => {
+//   sizeBox.addEventListener("change", (e) => {
+//     const checkedSize = [];
+//     sizeCheckboxes.forEach((checkBox) => {
+//       checkBox.checked === true
+//         ? checkedSize.push(checkBox.dataset.id)
+//         : checkedSize.slice(checkedSize.indexOf(checkBox.dataset.id), 1);
+//     });
+//     if (checkedSize.length > 0) {
+//       reqParams.size = checkedSize.join(",");
+//     } else {
+//       if (reqParams.size) {
+//         delete reqParams.size;
+//       }
+//     }
+//     getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+//   });
+// });
+
+// // Add kitchen material checkboxes listeners
+// const materialCheckboxes = document.querySelectorAll(".material-checkbox");
+// materialCheckboxes.forEach((materialBox) => {
+//   materialBox.addEventListener("change", (e) => {
+//     const checkedMaterial = [];
+//     materialCheckboxes.forEach((checkBox) => {
+//       checkBox.checked === true
+//         ? checkedMaterial.push(checkBox.dataset.id)
+//         : checkedMaterial.slice(
+//             checkedMaterial.indexOf(checkBox.dataset.id),
+//             1
+//           );
+//     });
+//     if (checkedMaterial.length > 0) {
+//       reqParams.material = checkedMaterial.join(",");
+//     } else {
+//       if (reqParams.material) {
+//         delete reqParams.material;
+//       }
+//     }
+//     getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+//   });
+// });
+
+// // Add kitchen color checkboxes listeners
+// const colorCheckboxes = document.querySelectorAll(".color-checkbox");
+// colorCheckboxes.forEach((colorBox) => {
+//   colorBox.addEventListener("change", (e) => {
+//     const checkedColor = [];
+//     colorCheckboxes.forEach((checkBox) => {
+//       checkBox.checked === true
+//         ? checkedColor.push(checkBox.dataset.id)
+//         : checkedColor.slice(checkedColor.indexOf(checkBox.dataset.id), 1);
+//     });
+//     if (checkedColor.length > 0) {
+//       reqParams.color = checkedColor.join(",");
+//     } else {
+//       if (reqParams.color) {
+//         delete reqParams.color;
+//       }
+//     }
+//     getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+//   });
+// });
+
+// // SORTING KITCHENS
+// // Cheap first
+// cheapFirstBtn.addEventListener("click", (e) => {
+//   const orderByReq = {
+//     order: "ASC",
+//     meta_key: "kitchen_price",
+//   };
+//   reqParams = Object.assign(reqParams, orderByReq);
+
+//   if (mobSortBtn.classList.contains("flex")) {
+//     mobSortBtn.querySelector(".sort-btn-text").textContent =
+//       cheapFirstBtn.textContent;
+//     mobSortOptions.classList.toggle("hidden");
+//   }
+
+//   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+// });
+// // Expensive first
+// expensiveFirstBtn.addEventListener("click", (e) => {
+//   const orderByReq = {
+//     order: "DESC",
+//     meta_key: "kitchen_price",
+//   };
+//   reqParams = Object.assign(reqParams, orderByReq);
+
+//   if (mobSortBtn.classList.contains("flex")) {
+//     mobSortBtn.querySelector(".sort-btn-text").textContent =
+//       expensiveFirstBtn.textContent;
+//     mobSortOptions.classList.toggle("hidden");
+//   }
+
+//   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+// });
+// // Order by sale size
+// saleFirstBtn.addEventListener("click", (e) => {
+//   const orderByReq = {
+//     order: "DESC",
+//     meta_key: "kitchen_sale",
+//   };
+//   reqParams = Object.assign(reqParams, orderByReq);
+
+//   if (mobSortBtn.classList.contains("flex")) {
+//     mobSortBtn.querySelector(".sort-btn-text").textContent =
+//       saleFirstBtn.textContent;
+//     mobSortOptions.classList.toggle("hidden");
+//   }
+
+//   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+// });
+
+// // Show more taxonomies
+// const termsContainers = document.querySelectorAll(".terms-container");
+// termsContainers.forEach((container, index) => {
+//   if (container.children.length > 4) {
+//     const templateTermsBtn = document.createElement("template");
+//     templateTermsBtn.innerHTML = `<button class="show-more-terms-btn-${index} group flex w-full mt-6 items-center justify-center space-x-4 primary-btn py-5
+//                    text-primary-hover-100 bg-transparent mb-8 border-2 border-primary-hover-50"
+//                    data-isshown="0">
+//             <span class="">Показать больше</span>
+//             <svg class="transition-transform ease-in-out duration-300" width="13" height="8" viewBox="0 0 13 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+//                 <path class="fill-primary-hover-100 group-hover:fill-white transition-transform" d="M0.199219 1.69999L1.59922 0.299988L6.19922 4.89999L10.7992 0.299988L12.1992 1.69999L6.19922 7.69999L0.199219 1.69999Z" fill="#737D8C"/>
+//             </svg>
+//         </button>`;
+//     container.appendChild(templateTermsBtn.content);
+
+//     const showTermsBtn = document.querySelector(
+//       `.show-more-terms-btn-${index}`
+//     );
+//     showTermsBtn.addEventListener("click", () => {
+//       if (showTermsBtn.dataset.isshown === "0") {
+//         showTermsBtn.dataset.isshown = "1";
+//         showTermsBtn.querySelector("span").innerText = "Показать меньше";
+//         showTermsBtn.querySelector("svg").classList.add("rotate-180");
+//         Array.from(container.children).forEach((input) => {
+//           input.classList.contains("hidden") && input.tagName === "LABEL"
+//             ? input.classList.remove("hidden")
+//             : null;
+//         });
+//       } else {
+//         showTermsBtn.dataset.isshown = "0";
+//         showTermsBtn.querySelector("span").innerText = "Показать больше";
+//         showTermsBtn.querySelector("svg").classList.remove("rotate-180");
+//         Array.from(container.children).forEach((input, index) => {
+//           if (index > 4) {
+//             !input.classList.contains("hidden") && input.tagName === "LABEL"
+//               ? input.classList.add("hidden")
+//               : null;
+//           }
+//         });
+//       }
+//     });
+
+//     Array.from(container.children).forEach((input, index) => {
+//       index > 4 && input.tagName === "LABEL"
+//         ? input.classList.add("hidden")
+//         : null;
+//     });
+//   }
+// });
+
+// // Load more products on mobile
+// const mobShowMoreBtn = document.querySelector(".mob-show-more-btn");
+// mobShowMoreBtn.addEventListener("click", (e) => {
+//   pagesCounter += productsPerPage;
+
+//   const numberOfPages = {
+//     per_page: pagesCounter,
+//   };
+//   reqParams = Object.assign(reqParams, numberOfPages);
+
+//   loadingSpinner.classList.toggle("hidden");
+
+//   axios
+//     .get("http://skmebel/wp-json/wp/v2/custom_kitchen", {
+//       params: reqParams,
+//     })
+//     .then((response) => {
+//       loadingSpinner.classList.toggle("hidden");
+//       if (response.data) {
+//         productsContainer.innerHTML = response.data;
+
+//         let postsNumber = response.headers["x-wp-total"];
+
+//         if (pagesCounter >= postsNumber) {
+//           mobShowMoreBtn.disabled = true;
 //         }
-//         // postsCounter = response.headers["x-wp-total"];
-//       });
-//   }
-//   setListeners() {
-//     const btns = this.querySelectorAll(".page-btn");
-//     btns.forEach((btn) => {
-//       btn.addEventListener("click", (e) => {
-//         this.pageNumber = btn.dataset.id;
-//         this.doRequest();
-//       });
+//       } else {
+//         productsContainer.innerHTML = `<p>Таких кухонь нет...</p>`;
+//       }
 //     });
-//     this.querySelector("[data-type='all']").addEventListener("click", () => {
-//       this.showAll === false ? (this.showAll = true) : (this.showAll = false);
-//       this.doRequest();
+// });
+
+// // Pagination
+// const doRequest = () => {
+//   const currentPageReq = { page: pageNumber ? pageNumber : 1 };
+
+//   reqParams = Object.assign(reqParams, currentPageReq);
+
+//   getFilteredPosts("http://skmebel/wp-json/wp/v2/custom_kitchen");
+// }
+
+// const setListeners = () => {
+//   const btns = pagination.querySelectorAll(".page-btn");
+//   btns.forEach((btn) => {
+//     btn.addEventListener("click", (e) => {
+//       pageNumber = btn.dataset.id;
+//       doRequest();
 //     });
-//   }
-//   setBtnClasses(el, style) {
-//     el.className = "";
-//     style.split(" ").forEach((class_name) => {
-//       el.classList.add(class_name);
+//   });
+//   if(pagination.querySelector("[data-type='all']")) {
+//     pagination.querySelector("[data-type='all']").addEventListener("click", () => {
+//       showAll === false ? (showAll = true) : (showAll = false);
+//       doRequest();
 //     });
 //   }
 // }
 
-// customElements.define("pagination-component", PaginationComponent);
+// const setBtnClasses = (el, style) => {
+//   el.className = "";
+//   style.split(" ").forEach((class_name) => {
+//     el.classList.add(class_name);
+//   });
+// }
+

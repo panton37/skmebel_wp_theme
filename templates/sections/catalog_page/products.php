@@ -49,12 +49,13 @@ $products_page = new WP_Query([
 
             </div>
         </div>
-        <div class="products grid grid-cols-2 gap-4 xl:grid-cols-3 xl:gap-12 mb-8">
+        <div data-per_page="2" class="products grid grid-cols-2 gap-4 xl:grid-cols-3 xl:gap-12 mb-8">
             <!--Products container-->
             <?php if ($products_page->have_posts()) : ?>
                 <?php get_template_part('templates/sections/catalog_page/item', 'kitchen', $products_page->posts) ?>
             <?php endif; ?>
         </div>
+        <div class="empty-message hidden">Таких кухонь нет</div>
         <div class="w-full flex justify-center">
             <button class="mob-show-more-btn xl:hidden group flex items-center justify-center space-x-4 primary-btn py-5
                    text-primary-hover-100 w-fit bg-transparent border-2 border-primary-hover-50
@@ -66,7 +67,7 @@ $products_page = new WP_Query([
                 </svg>
             </button>
         </div>
-        <?php get_template_part('templates/sections/catalog_page/pagination', $post_id); ?>
+        <my-pagination total-pages="<?=$products_page->max_num_pages?>"></my-pagination>
     </div>
     <?php get_template_part('templates/sections/catalog_page/promo-banner'); ?>
     <?php get_template_part('templates/sections/catalog_page/info-block'); ?>

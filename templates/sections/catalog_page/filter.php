@@ -6,6 +6,10 @@
                 <path d="M2.22225 0L20 17.7778L17.7778 20L2.97837e-05 2.22222L2.22225 0Z" fill="#17191C"/>
                 <path d="M20 2.22222L2.22222 20L0 17.7778L17.7778 2.24783e-06L20 2.22222Z" fill="#17191C"/>
             </svg>
+
+            <svg class="icon-svg">
+                <use href="#icon-arrow"></use>
+            </svg>
         </div>
         <!--filters form-->
         <form class="filter-form flex flex-col px-5 lg:px-0 gap-y-10 lg:gap-y-0 pb-44" onsubmit="event.preventDefault();">

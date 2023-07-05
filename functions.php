@@ -166,7 +166,10 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
                 'relation' => 'AND',
                 [
                     'key' => 'kitchen_price',
-                    'value' => [$price_from, $price_to],
+                    'value' => [
+                        !$price_from ? 0 : $price_from, 
+                        !$price_to ? 999999999 : $price_to,
+                    ],
                     'compare' => 'BETWEEN',
                     'type' => 'NUMERIC'
                 ],
