@@ -29,16 +29,16 @@ $products_page = new WP_Query([
         <div class="mob-sort-options hidden absolute z-30 bg-white w-full top-12 text-center pt-11 pb-8 rounded-b-xl xl:flex
         gap-x-7 mb-9 shadow-[0px_4px_12px_rgba(0,_0,_0,_0.25)] xl:bg-transparent xl:shadow-none xl:left-auto xl:rounded-none
         xl:pt-0 xl:pb-0 xl:reset-position">
-            <div class="popularity-first mb-4 xl:mb-0 cursor-pointer text-xl hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div data-type="popularity" class="sort-btn popularity-first mb-4 xl:mb-0 cursor-pointer text-xl hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 По популярности
             </div>
-            <div class="cheap-first mb-4 xl:mb-0 cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div data-type="cheap" class="sort-btn cheap-first mb-4 xl:mb-0 cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 Сначала дешевле
             </div>
-            <div class="expensive-first mb-4 xl:mb-0 cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div data-type="expensive" class="sort-btn expensive-first mb-4 xl:mb-0 cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 Сначала дороже
             </div>
-            <div class="sale-first cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
+            <div data-type="sale" class="sort-btn sale-first cursor-pointer text-xl text-primary-black-50 hover:opacity-80 transition-opacity duration-300 ease-in-out">
                 По скидке
             </div>
         </div>
@@ -49,7 +49,7 @@ $products_page = new WP_Query([
 
             </div>
         </div>
-        <div data-per_page="2" class="products grid grid-cols-2 gap-4 xl:grid-cols-3 xl:gap-12 mb-8">
+        <div data-per_page="4" class="products grid grid-cols-2 gap-4 xl:grid-cols-3 xl:gap-12 mb-8">
             <!--Products container-->
             <?php if ($products_page->have_posts()) : ?>
                 <?php get_template_part('templates/sections/catalog_page/item', 'kitchen', $products_page->posts) ?>

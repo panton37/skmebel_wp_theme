@@ -26,7 +26,7 @@
             </div>
             <details class="group/details border-b border-primary-black-25 pb-6" open>
                 <summary class="flex justify-between items-center cursor-pointer">
-                    <h3 class="text-2xl px-2 font-medium lg:text-3xl lg:font-semibold">Размер</h3>
+                    <h3 class="text-2xl px-2 mb-4 font-medium lg:text-3xl lg:font-semibold">Размер</h3>
                     <svg class="group-open/details:rotate-180 transition-transform duration-200 ease-in-out" width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M10 12L20 1.79494L18.2411 -2.25185e-07L10 8.41011L1.75888 -2.25185e-07L0 1.79494L10 12Z" fill="#252528"/>
                     </svg>

@@ -88,6 +88,14 @@ class Paginator <P, E extends string> {
         }
     }
 
+    async setParams(queryObject: any) {
+        this.setPending(true);
+        this.params = Object.assign(queryObject, this.params);
+        const response = await this.getPage();
+        this.rerenderPagination(+response.headers['x-wp-totalpages']);
+        this.setPending(false);
+    }
+
     async getPage() {
         this.showSpinner();
 

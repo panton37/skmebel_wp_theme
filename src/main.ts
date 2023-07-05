@@ -6,4 +6,4 @@ import './app/components/tabs.ts';
 import './app/components/main-slider.ts';
 import './app/components/paginator.ts';
 import './app/components/catalog_page.js';
-import './app/components/pagination.js'
+import './app/components/pagination.js';

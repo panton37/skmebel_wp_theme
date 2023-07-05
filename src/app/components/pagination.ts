@@ -40,13 +40,14 @@ class Pagination extends HTMLElement {
 
     get pending() {
         const val = JSON.parse(this.getAttribute('pending'));
-
         if (typeof val !== 'boolean') return false;
         return val;
     }
 
     get showAll() {
-        return Boolean(this.getAttribute('show-all'));
+        const val = JSON.parse(this.getAttribute('show-all'));
+        if (typeof val !== 'boolean') return false;
+        return val;
     }
 
     set showAll(val: boolean) {
@@ -135,14 +136,10 @@ class Pagination extends HTMLElement {
         this.#elements.bulletsWrapper.innerHTML = '';
         
         if(this.showAll === true) {
-            console.log(`${this.showAll} - render all`);
-                
             for (let i = 1; i <= this.totalPages; i++) {
                 this.createBullet(i, i === this.currentPage);
             }    
         } else {
-            console.log(`${this.showAll} - render 3`);
-
             const min = Math.max(1, this.currentPage - (Number(this.currentPage===this.totalPages) + this.showedPages));
             const max = Math.min(this.totalPages, this.currentPage + this.showedPages + Math.max(0, min - this.currentPage + this.showedPages));
 
@@ -158,7 +155,6 @@ class Pagination extends HTMLElement {
             bullet.classList.add(...this.#classes.inactiveBullet);
             bullet.addEventListener('click', () => {
                 this.showAll = !this.showAll;
-                console.log(this.showAll);
             });
             this.#elements.bulletsWrapper.append(bullet);
         }
