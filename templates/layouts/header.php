@@ -15,7 +15,7 @@
             bg-white shadow-[0px_4px_12px_rgba(0,_0,_0,_0.25)] xxl:relative xxl:top-0 xxl:left-0 xxl:bg-transparent
             lg:text-xl space-y-2 xxl:space-y-0 xxl:shadow-none">
                 <li class="">
-                    <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Проекты</a>
+                    <a href="<?php echo get_page_uri( 110 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Проекты</a>
                 </li>
                 <li class="">
                     <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Производство</a>

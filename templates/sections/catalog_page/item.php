@@ -1,6 +1,7 @@
 <?php foreach ($args as $post) : ?>
+    <?php $post_id = get_field('url', false, false); ?>
     <article class="group cursor-pointer">
-        <a href="#">
+        <a href="<?php echo get_the_permalink($post_id); ?>">
             <img class="h-[219px] lg:h-[450px] w-full mb-2 rounded-xl xl:rounded-3xl xl:mb-5 object-cover"
                  src="<?php the_field('kitchen_image', $post); ?>" alt="<?php the_field('kitchen_name', $post); ?>" />
             <div class="px-2 xl:px-5">

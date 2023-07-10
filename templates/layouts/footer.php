@@ -153,16 +153,18 @@
         </div>
     </div>
     <div class="flex justify-between lg:hidden fixed z-40 bottom-0 left-0 right-0 border-t border-primary-black-25">
+        <?php if(is_page('catalog')): ?>
         <div class="absolute bottom-full w-full flex justify-center">
             <a class="show-filter-btn primary-btn block mb-6 w-fit" href="#">Фильтр</a>
         </div>
+        <?php endif ?>
         <a class="flex items-center justify-center w-full bg-primary-black-44 border-r border-primary-black-25 py-4" href="#">
             <svg class="mr-2" width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M17.7407 14.2833L14.3532 11.2033C14.1931 11.0578 13.9827 10.9802 13.7664 10.9869C13.5501 10.9935 13.3449 11.084 13.194 11.2392L11.1999 13.29C10.7199 13.1983 9.75487 12.8975 8.76154 11.9067C7.7682 10.9125 7.46737 9.945 7.3782 9.46833L9.42737 7.47333C9.58271 7.32261 9.67332 7.11735 9.68001 6.90101C9.68669 6.68466 9.60894 6.4742 9.4632 6.31417L6.38404 2.9275C6.23824 2.76696 6.0356 2.66959 5.81916 2.65605C5.60273 2.64251 5.38954 2.71388 5.22487 2.855L3.41654 4.40583C3.27246 4.55043 3.18647 4.74287 3.17487 4.94667C3.16237 5.155 2.92404 10.09 6.7507 13.9183C10.089 17.2558 14.2707 17.5 15.4224 17.5C15.5907 17.5 15.694 17.495 15.7215 17.4933C15.9253 17.4819 16.1176 17.3956 16.2615 17.2508L17.8115 15.4417C17.9532 15.2775 18.0251 15.0645 18.0119 14.8481C17.9986 14.6317 17.9013 14.429 17.7407 14.2833Z" fill="#17191C"/>
             </svg>
             Звонок
         </a>
-        <a class="flex items-center justify-center w-full bg-primary-black-44 border-r border-primary-black-25 py-4" href="#">
+        <a class="mob-menu-reveal-btn flex items-center justify-center w-full bg-primary-black-44 border-r border-primary-black-25 py-4" href="#">
             <svg class="mr-2" width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18.8346 7.5H2.16797V9.16667H18.8346V7.5ZM14.668 10.8333H2.16797V12.5H14.668V10.8333Z" fill="black"/>
             </svg>
@@ -175,4 +177,14 @@
             Написать
         </a>
     </div>
+    <div class="mob-menu-reveal hidden absolute z-30 l-0 r-0 top-0 bottom-0 w-full h-full items-center justify-center bg-white">
+            <div class="pb-14 flex flex-col text-center">
+                <a href="<?php echo get_page_uri( 110 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Проекты</a>
+                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Производство</a>
+                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">О&nbsp;нас</a>
+                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Акции</a>
+                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">3D&nbsp;дизайн</a>
+                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Контакты</a>
+            </div>
+        </div>
 </footer>

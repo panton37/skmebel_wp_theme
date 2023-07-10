@@ -2,13 +2,12 @@
     <aside class="flex flex-col bg-white">
         <div class="lg:hidden flex justify-between items-center px-8 py-6 mb-6 border-b border-primary-black-25">
             <span class="opacity-40">Фильтр</span>
-            <svg class="close-filter-btn" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- <svg class="close-filter-btn" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2.22225 0L20 17.7778L17.7778 20L2.97837e-05 2.22222L2.22225 0Z" fill="#17191C"/>
                 <path d="M20 2.22222L2.22222 20L0 17.7778L17.7778 2.24783e-06L20 2.22222Z" fill="#17191C"/>
-            </svg>
-
-            <svg class="icon-svg">
-                <use href="#icon-arrow"></use>
+            </svg> -->
+            <svg class="icon-svg close-filter-btn w-5 h-5">
+                <use href="#icon-cross"></use>
             </svg>
         </div>
         <!--filters form-->

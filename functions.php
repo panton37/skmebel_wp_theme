@@ -148,7 +148,6 @@ function custom_kitchen(WP_REST_Request $request) : WP_REST_Response
         'post_type' => 'kitchen',
         'paged' => $request->get_param('page'),
         'posts_per_page' => $per_page,
-//        'posts_per_page' => $per_page,
     ], $term_meta ? [
             'meta_key'          => $term_meta,
             'orderby'           => 'meta_value_num',

@@ -1,0 +1,32 @@
+{
+    "key": "group_64a7c348cacfe",
+    "title": "Настройки страницы кухни",
+    "fields": [],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "kitchen"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "left",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 1,
+    "acfe_display_title": "",
+    "acfe_autosync": [
+        "json"
+    ],
+    "acfe_permissions": "",
+    "acfe_form": 1,
+    "acfe_meta": "",
+    "acfe_note": "",
+    "modified": 1688985019
+}
