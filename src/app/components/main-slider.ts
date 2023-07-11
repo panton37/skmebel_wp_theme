@@ -128,4 +128,41 @@ document.addEventListener("DOMContentLoaded", () => {
       prevEl: ".slider-prev",
     },
   });
+
+  const productionPageSlider = new Swiper(".slider-6040", {
+    modules: [Navigation],
+    // Optional parameters
+    direction: "horizontal",
+    slidesPerView: "auto",
+    centeredSlides: false,
+    slidesPerGroup: 2,
+    spaceBetween: 25,
+    loop: false,
+
+    breakpoints: {
+      // when window width is <= 1024px
+      10: {
+        slidesPerView: "auto",
+        spaceBetween: 10,
+        slidesPerGroup: 1,
+        centeredSlides: false,
+        navigation: {
+          enabled: false,
+        },
+      },
+      // when window width is >= 1024
+      1024: {
+        slidesPerView: "auto",
+        centeredSlides: false,
+        slidesPerGroup: 2,
+        spaceBetween: 25,
+      },
+    },
+
+    // Navigation arrows
+    navigation: {
+      nextEl: ".slider-next",
+      prevEl: ".slider-prev",
+    },
+  });
 });

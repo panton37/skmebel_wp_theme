@@ -3,7 +3,10 @@
         <div class="bg-primary-black-20 xl:overflow-hidden rounded-xl px-5 pt-5 xl:pt-0 xl:px-20
                     xl:grid xl:grid-cols-2 xl:rounded-[3.75rem]">
             <div class="xl:py-20">
-                <h2 class="text-3xl font-medium mb-6 xl:text-4xl xl:leading-[110%] xl:mb-10">
+                <h2 class="hidden xl:flex text-3xl font-medium mb-6 xl:text-6xl xl:leading-[110%] xl:mb-10">
+                    Закажите кухню прямо сейчас и получите ее уже через 2,5 недели
+                </h2>
+                <h2 class="flex xl:hidden text-3xl font-medium mb-6 xl:text-6xl xl:leading-[110%] xl:mb-10">
                     Запись на индивидуальный расчёт
                 </h2>
                 <form action="">
@@ -21,9 +24,10 @@
                                type="text"
                                placeholder="Телефон" />
                     </label>
-                    <div class="mt-12 xl:mt-20 flex items-center flex-col">
-                        <button type="submit" class="w-full mb-5 xl:items-center secondary-btn">
-                            Заказать
+                    <div class="mt-12 xl:mt-20 flex flex-col xl:items-center xl:flex-row">
+                        <button type="submit" class=" mb-5 w-fit xl:mb-0 xl:mr-7 xl:items-center secondary-btn">
+                            <span class="xl:hidden block">Записаться</span>
+                            <span class="xl:block hidden">Заказать</span>
                         </button>
                         <p class="opacity-40 mb-7 xl:mb-0 ">
                             Согласен с обработкой персональных данных в соответствии с
@@ -34,8 +38,8 @@
             </div>
             <div class="xl:flex xl:flex-col xl:justify-end">
                 <img src="<?php echo get_theme_file_uri('src/app/assets/img/contact_kitchen.png') ?>" alt="Кухня"
-                     class="xl:-scale-x-100 ml-auto -mr-5 xl:-mr-20 translate-y-24 -mt-24 xl:translate-y-0 xl:mt-0
-                            w-11/12 h-full object-cover object-left xl:object-right"/>
+                     class="ml-auto -mr-5 xl:-mr-20 translate-y-24 -mt-24 xl:translate-y-0 xl:mt-0
+                            w-11/12 h-full object-cover object-left"/>
             </div>
         </div>
     </div>

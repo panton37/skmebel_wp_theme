@@ -1,9 +1,9 @@
 <footer class="container lg:px-20 lg:pt-9">
     <div class="pt-10 flex flex-col lg:flex-row lg:justify-between lg:border-t lg:border-t-primary-black-25">
         <div class="flex justify-between items-center px-5 lg:px-0 pr-5 mb-5 lg:items-start lg:justify-start">
-            <a href="#" class="text-[1.625rem] leading-none font-medium uppercase">
-                <span class="text-primary-accent-100 font-bold mr-2">СК</span>мебель
-            </a>
+            <?php
+                the_field('logo_text', 'option') ? the_field('logo_text', 'option') : the_field('logo_img', 'option');
+            ?>
             <a href="#" class="flex items-center space-x-2 lg:hidden">
                 Наверх&nbsp;
                 <img src="<?php echo get_theme_file_uri('src/app/assets/img/arrow_up.svg') ?>" alt="Наверх"/></a>
@@ -70,14 +70,20 @@
         </div>
         <div class="px-5">
             <div class="mb-5">
-                <a class="hover:text-primary-hover-100 ease-in-out transition-colors duration-300" href="tel:+79195557755">+7 919 555 77 55</a>
+                <a class="hover:text-primary-hover-100 ease-in-out transition-colors duration-300" href="tel:+79195557755">
+                    <?php the_field('main_phone', 'option') ?>
+                </a>
             </div>
             <div class="hover:text-primary-hover-100 ease-in-out transition-colors duration-300">
-                <a href="mailto:ceo@wehaveanidea.ru" class="">ceo@wehaveanidea.ru</a>
+                <a href="mailto:ceo@wehaveanidea.ru" class=""><?php the_field('main_email', 'option') ?></a>
             </div>
             <div class="my-10">
                 <div class="flex gap-x-4">
-                    <a href="#" class="group">
+                    <!-- TELEGRAM -->
+                    <a href="<?php the_field('main_telegram', 'option'); ?>" class="group">
+                        <svg class="icon-svg w-5 h-5">
+                            <use href="#icon-telegram"></use>
+                        </svg>
                         <svg class="w-6 h-6"
                                 width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_651_763)">
@@ -92,7 +98,11 @@
                             </defs>
                         </svg>
                     </a>
-                    <a href="#" class="group">
+                    <!-- WHATSAPP -->
+                    <a href="<?php the_field('main_whatsapp', 'option'); ?>" class="group">
+                        <svg class="icon-svg w-5 h-5">
+                            <use href="#icon-whatsapp"></use>
+                        </svg>
                         <svg class="w-6 h-6"
                                 height="32" width="32" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                              viewBox="0 0 58 58" xml:space="preserve">
@@ -105,7 +115,11 @@
                             c5.577,5.577,11.873,8.323,17.45,2.746l1.758-1.758C48.048,40.341,48.243,39.042,47.683,37.985z"/>
                         </svg>
                     </a>
-                    <a href="#" class="group">
+                    <!-- VK -->
+                    <a href="<?php the_field('main_vk', 'option'); ?>" class="group">
+                        <svg class="icon-svg w-5 h-5">
+                            <use href="#icon-vk"></use>
+                        </svg>
                         <svg class="w-6 h-6"
                                 width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_651_768)">
@@ -120,26 +134,16 @@
                             </defs>
                         </svg>
                     </a>
-                    <a href="#" class="group">
-                        <svg class="w-6 h-6"
-                                width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <g clip-path="url(#clip0_651_771)">
-                                <path class="group-hover:fill-primary-hover-100 ease-in-out transition-colors duration-300"
-                                        fill-rule="evenodd" clip-rule="evenodd" d="M16 32C19.1645 32 22.2579 31.0616 24.8891 29.3035C27.5203 27.5454 29.5711 25.0466 30.7821 22.1229C31.9931 19.1993 32.3099 15.9823 31.6926 12.8786C31.0752 9.77487 29.5513 6.92394 27.3137 4.6863C25.0761 2.44866 22.2251 0.924806 19.1214 0.307443C16.0177 -0.309921 12.8007 0.00693253 9.87706 1.21793C6.95345 2.42894 4.45459 4.4797 2.69649 7.11088C0.938384 9.74207 0 12.8355 0 16C0 20.2435 1.68571 24.3131 4.68629 27.3137C7.68687 30.3143 11.7565 32 16 32Z" fill="black"/>
-                                <path d="M14.5928 13.6143C14.3169 13.2373 13.9451 12.9412 13.516 12.7567C13.0147 12.5254 12.468 12.4095 11.916 12.4175C10.764 12.4175 9.77039 12.9151 8.94319 13.9039V8.46387H6.36719V22.5615H8.93839V17.5919C8.93839 16.7577 9.01572 16.1273 9.17039 15.7007C9.29974 15.3055 9.56064 14.9667 9.90959 14.7407C10.2512 14.5254 10.6482 14.4142 11.052 14.4207C11.3797 14.4079 11.7035 14.4955 11.98 14.6719C12.223 14.8288 12.4058 15.0634 12.4984 15.3375C12.596 15.6175 12.6424 16.2767 12.6424 17.3167V22.5615H15.22V16.7439C15.2381 16.0846 15.1937 15.4251 15.0872 14.7743C15.0031 14.358 14.8348 13.9633 14.5928 13.6143Z" fill="white"/>
-                                <path d="M25.2223 14.7743C25.1374 14.3582 24.9693 13.9636 24.7279 13.6143C24.4526 13.2381 24.082 12.9421 23.6543 12.7567C23.1528 12.5261 22.6062 12.4103 22.0543 12.4175C20.9023 12.4175 19.9114 12.9129 19.0815 13.9039V8.46387H16.5039V22.5615H19.0767V17.6015C19.0767 16.7673 19.154 16.1369 19.3087 15.7103C19.4398 15.316 19.7003 14.9777 20.0479 14.7503C20.3891 14.5353 20.7855 14.4241 21.1887 14.4303C21.5169 14.4173 21.8413 14.5049 22.1183 14.6815C22.3614 14.8384 22.5441 15.073 22.6367 15.3471C22.7338 15.6276 22.7823 16.2873 22.7823 17.3263V22.5615H25.3551V16.7439C25.3724 16.0846 25.328 15.4252 25.2223 14.7743Z" fill="white"/>
-                            </g>
-                            <defs>
-                                <clipPath id="clip0_651_771">
-                                    <rect width="32" height="32" fill="white"/>
-                                </clipPath>
-                            </defs>
+                    <!-- HH -->
+                    <a href="<?php the_field('main_hh', 'option'); ?>" class="group">
+                        <svg class="icon-svg w-5 h-5">
+                            <use href="#icon-hh"></use>
                         </svg>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="hidden xxl:block">Ставрополь, ул. Первомайская 37</div>
+        <div class="hidden xxl:block"><?php the_field('main_address', 'option') ?></div>
         <div class="pl-5 mb-16 text-primary-black-50 lg:flex lg:flex-col lg:text-end">
             <a href="#header" class="group hover:text-primary-hover-100 ml-auto lg:mb-4 text-primary-black-80 lg:flex
                                items-center space-x-2 hidden ease-in-out transition-colors duration-300">
@@ -148,7 +152,7 @@
                     <path opacity="0.6" d="M5.5 0.907146C5.59649 0.907146 5.68695 0.923576 5.77138 0.956436C5.85581 0.988775 5.93421 1.04406 6.00658 1.1223L10.7829 6.28603C10.9276 6.44251 11 6.62846 11 6.84387C11 7.05877 10.9276 7.24445 10.7829 7.40093C10.6382 7.55741 10.4693 7.63565 10.2763 7.63565C10.0833 7.63565 9.91447 7.55741 9.76974 7.40093L6.22368 3.56725V12.3299C6.22368 12.5516 6.15421 12.7342 6.01526 12.8776C5.8768 13.0211 5.70504 13.0928 5.5 13.0928C5.29496 13.0928 5.12296 13.0179 4.98401 12.8682C4.84555 12.718 4.77632 12.5321 4.77632 12.3104V3.56725L1.23026 7.40093C1.08553 7.55741 0.916666 7.63565 0.723684 7.63565C0.530702 7.63565 0.361843 7.55741 0.217106 7.40093C0.0723686 7.24445 0 7.05877 0 6.84387C0 6.62846 0.0723686 6.44251 0.217106 6.28603L4.99342 1.1223C5.06579 1.04406 5.14419 0.988775 5.22862 0.956436C5.31305 0.923576 5.40351 0.907146 5.5 0.907146Z" fill="black"/>
                 </svg>
             </a>
-            <p class="mb-1">2015-2023 ООО «СК МЕБЕЛЬ»</p>
+            <p class="mb-1"><?php the_field('main_copy', 'option') ?></p>
             <a href="#" class="w-fit hover:text-primary-hover-100 ease-in-out transition-colors duration-300">Политика конфиденциальности</a>
         </div>
     </div>
@@ -177,7 +181,7 @@
             Написать
         </a>
     </div>
-    <div class="mob-menu-reveal hidden absolute z-30 l-0 r-0 top-0 bottom-0 w-full h-full items-center justify-center bg-white">
+    <div class="mob-menu-reveal hidden fixed z-30 l-0 r-0 top-0 bottom-0 w-full h-full items-center justify-center bg-white">
             <div class="pb-14 flex flex-col text-center">
                 <a href="<?php echo get_page_uri( 110 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Проекты</a>
                 <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Производство</a>

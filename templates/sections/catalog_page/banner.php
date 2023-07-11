@@ -1,4 +1,4 @@
-<section class="container mb-7 mt-5 lg:mb-10 xl:-mt-11">
+<section class="container mb-7 mt-5 lg:mb-10 xl:mt-11">
   <div class="px-5 lg:px-0">
     <div class="relative bg-primary-hover-10 rounded-2xl px-7 lg:px-40 pb-7 pt-6 lg:py-9 text-xl font-medium
                 xl:flex xl:columns-2 xl:items-center">

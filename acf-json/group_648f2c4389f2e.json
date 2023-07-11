@@ -45,35 +45,11 @@
             "new_lines": ""
         },
         {
-            "key": "field_64abe39fc1e55",
-            "label": "Заголовок полного описания",
-            "name": "kitchen_full_description_caption",
-            "aria-label": "",
-            "type": "text",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "acfe_save_meta": 0,
-            "default_value": "Заголовок",
-            "acfe_settings": "",
-            "acfe_validate": "",
-            "maxlength": "",
-            "acfe_permissions": "",
-            "placeholder": "",
-            "prepend": "",
-            "append": ""
-        },
-        {
             "key": "field_64abdc73a063d",
             "label": "Полное описание",
-            "name": "kitchen_full_description_content",
+            "name": "kitchen_full_description",
             "aria-label": "",
-            "type": "textarea",
+            "type": "wysiwyg",
             "instructions": "",
             "required": 0,
             "conditional_logic": 0,
@@ -83,26 +59,14 @@
                 "id": ""
             },
             "acfe_save_meta": 0,
-            "default_value": "Полное описание",
-            "acfe_textarea_code": 0,
-            "acfe_settings": {
-                "64abe4c7df2c0": {
-                    "acfe_settings_location": "",
-                    "acfe_settings_settings": ""
-                }
-            },
-            "acfe_validate": {
-                "64abe4cbdf2c1": {
-                    "acfe_validate_location": "",
-                    "acfe_validate_rules_and": "",
-                    "acfe_validate_error": ""
-                }
-            },
-            "maxlength": "",
+            "default_value": "Полное описание кухни",
+            "acfe_settings": "",
+            "acfe_validate": "",
             "acfe_permissions": "",
-            "rows": "",
-            "placeholder": "",
-            "new_lines": ""
+            "tabs": "all",
+            "toolbar": "full",
+            "media_upload": 0,
+            "delay": 0
         },
         {
             "key": "field_64abe5acb5380",
@@ -313,5 +277,5 @@
     "acfe_form": 1,
     "acfe_meta": "",
     "acfe_note": "",
-    "modified": 1688987172
+    "modified": 1689064430
 }
