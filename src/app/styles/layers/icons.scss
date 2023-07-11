@@ -1,0 +1,12 @@
+a:has(.footer-svg) {
+  color: #17191c;
+  &:hover {
+    color: #2086e4;
+  }
+}
+.footer-svg {
+  width: 24px;
+  height: 24px;
+  transition: color ease-in-out 0.2s;
+  fill: currentColor;
+}

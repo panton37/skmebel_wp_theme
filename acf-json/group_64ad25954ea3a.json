@@ -7,28 +7,21 @@
             "label": "Логотип (текст)",
             "name": "logo_text",
             "aria-label": "",
-            "type": "wysiwyg",
+            "type": "text",
             "instructions": "",
             "required": 0,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_64ad25c989f71",
-                        "operator": "==empty"
-                    }
-                ]
-            ],
+            "conditional_logic": 0,
             "wrapper": {
                 "width": "",
                 "class": "",
                 "id": ""
             },
             "acfe_save_meta": 0,
-            "default_value": "<a href=\"\/\" class=\"text-[1.625rem] leading-none font-medium uppercase\">\r\n    <span class=\"text-primary-accent-100 font-bold mr-2\">СК<\/span>мебель\r\n<\/a>",
-            "tabs": "all",
-            "toolbar": "full",
-            "media_upload": 1,
-            "delay": 0
+            "default_value": "<a href=\"\/\" class=\"text-[1.625rem] leading-none font-medium uppercase\">     <span class=\"text-primary-accent-100 font-bold mr-2\">СК<\/span>мебель <\/a>",
+            "maxlength": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
         },
         {
             "key": "field_64ad25c989f71",
@@ -84,5 +77,5 @@
     "acfe_form": 0,
     "acfe_meta": "",
     "acfe_note": "",
-    "modified": 1689069186
+    "modified": 1689075769
 }

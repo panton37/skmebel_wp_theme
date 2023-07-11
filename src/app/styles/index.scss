@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "layers/icons.scss";
+
 @layer base {
   html {
     @apply scroll-smooth

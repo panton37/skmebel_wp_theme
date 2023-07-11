@@ -5,7 +5,7 @@
 
     get_header();?>    
         <main class="lg:mt-11">
-                <div div class="lg:mb-12">
+                <div div class="lg:mb-12 mt-6 lg:mt-0">
                         <?php get_template_part('templates/sections/catalog_page/breadcrumbs');?>
                 </div>
                 <div class="container px-5 xl:px-20">
