@@ -10,7 +10,6 @@ function theme_init_assets() {
     if( ! is_admin() ){
         wp_deregister_script('jquery');
         wp_register_script('jquery', "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js", false, null, true);
-
         wp_enqueue_script('jquery');
         wp_enqueue_script('wp-api');
 

@@ -146,14 +146,17 @@
             Написать
         </a>
     </div>
-    <div class="mob-menu-reveal hidden fixed z-30 l-0 r-0 top-0 bottom-0 w-full h-full items-center justify-center bg-white">
-            <div class="pb-14 flex flex-col text-center">
-                <a href="<?php echo get_permalink( 110 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Проекты</a>
-                <a href="<?php echo get_permalink( 165 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Производство</a>
-                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">О&nbsp;нас</a>
-                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Акции</a>
-                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">3D&nbsp;дизайн</a>
-                <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Контакты</a>
-            </div>
+    <div class="mob-menu-reveal hidden fixed z-30 l-0 r-0 top-0 bottom-0 w-full h-full items-center justify-center bg-white flex-col">
+        <svg class="icon-svg close-mob-menu absolute right-5 top-5 w-5 h-5">
+            <use href="#icon-cross"></use>
+        </svg>
+        <div class="pb-14 flex flex-col text-center">
+            <a href="<?php echo get_permalink( 110 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Проекты</a>
+            <a href="<?php echo get_permalink( 165 ); ?>" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Производство</a>
+            <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">О&nbsp;нас</a>
+            <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Акции</a>
+            <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">3D&nbsp;дизайн</a>
+            <a href="#" class="p-3 hover:text-primary-hover-100 transition-colors ease-in-out duration-300">Контакты</a>
         </div>
+    </div>
 </footer>
